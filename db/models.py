@@ -3,6 +3,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 from datetime import datetime
 from db.database import Base
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.session import Session
 
 
 # Definieren Sie Ihre Datenbankmodelle für die Schiffsinspektion
@@ -10,14 +11,14 @@ class ShipInspection(Base):
     __tablename__ = "ship_inspection"
 
     id = Column(Integer, index=True, primary_key=True)
-    inspection_date = Column(DateTime, default=datetime.utcnow)
     inspection_location = Column(String)
     ship_name = Column(String)
     inspection_details = Column(String)
+    numerical_value = Column(Integer)
 
 
 # Funktion zum Hinzufügen einer Schiffsinspektion in die Datenbank
-def create_ship_inspection(db, inspection_data):
+def create_ship_inspection(db: Session, inspection_data):
     inspection = ShipInspection(**inspection_data)
     db.add(inspection)
     db.commit()

@@ -6,29 +6,21 @@ from pydantic import BaseModel
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db.database import Base,get_db
+from db.database import Base, get_db
 from db.models import create_ship_inspection
 from sqlalchemy.orm import Session
+import schemas
+from db.database import engine
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Create engine and session
-engine = create_engine("sqlite:///projTeste1.db", connect_args={"check_same_thread": False})
 Base.metadata.create_all(bind=engine)
-SessionLocal = sessionmaker(bind=engine)
-
 
 # Create Jinja2Templates instance
 templates = Jinja2Templates(directory="templates")
-
-
-class ShipInspectionInput(BaseModel):
-    inspection_location: str
-    ship_name: str
-    inspection_details: str
-    numerical_value: int
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -37,16 +29,21 @@ async def read_item(request: Request):
 
 
 @app.post("/submit/")
-async def submit_ship_inspection(request: Request):
-    data = await request.form()
-    inspection_location = data.get("inspection_location")
-    ship_name = data.get("ship_name")
-    inspection_details = data.get("inspection_details")
-    numerical_value = int(data.get("numerical_value"))
+async def submit_ship_inspection(request: Request, db: Session = Depends(get_db)):
+    form_data = await request.form()
+    inspection_location = form_data.get("inspection_location")
+    ship_name = form_data.get("ship_name")
+    inspection_details = form_data.get("inspection_details")
+    numerical_value = int(form_data.get("numerical_value"))
 
-    # Verarbeiten Sie die Daten hier weiter...
+    ship_inspection = schemas.ShipInspectionInput(
+        inspection_location=inspection_location,
+        ship_name=ship_name,
+        inspection_details=inspection_details,
+        numerical_value=numerical_value
+    )
 
-    return {"status": "success"}
+    return create_ship_inspection(db, ship_inspection.dict())
 
 
 @app.get("/download/")
