@@ -6,22 +6,27 @@
     <title>Ship Inspection App</title>
 </head>
 <body>
-    <h1>Ship Inspection App</h1>
-    <form action="/submit/" method="post">
-        <label for="inspection_location">Inspection Location:</label><br>
-        <input type="text" id="inspection_location" name="inspection_location"><br>
+  <h1>Ship Inspection App</h1>
+<form action="/submit/" method="post">
+    <label for="inspection_location">Inspection Location:</label><br>
+    <select id="inspection_location" name="inspection_location">
+        <option value="mashhad">Mashhad</option>
+        <option value="tehran">Tehran</option>
+        <!-- Weitere Optionen hier einfügen -->
+    </select><br>
 
-        <label for="ship_name">Ship Name:</label><br>
-        <input type="text" id="ship_name" name="ship_name"><br>
+    <label for="ship_name">Ship Name:</label><br>
+    <input type="text" id="ship_name" name="ship_name"><br>
 
-        <label for="inspection_details">Inspection Details:</label><br>
-        <textarea id="inspection_details" name="inspection_details"></textarea><br>
+    <label for="inspection_details">Inspection Details:</label><br>
+    <textarea id="inspection_details" name="inspection_details"></textarea><br>
 
-        <label for="numerical_value">Numerical Value:</label><br>
-        <input type="number" id="numerical_value" name="numerical_value"><br>
+    <label for="numerical_value">Numerical Value:</label><br>
+    <input type="number" id="numerical_value" name="numerical_value"><br>
 
-        <input type="submit" value="Submit">
-    </form>
+    <input type="submit" value="Submit">
+</form>
+
     <br>
     <a href="/download/">Download Ship Inspections as Excel</a>
 </body>
