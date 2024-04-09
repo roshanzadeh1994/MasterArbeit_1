@@ -8,6 +8,7 @@ from db.models import create_ship_inspection, ShipInspection
 from sqlalchemy.orm import Session
 import schemas
 from db.database import engine
+import tempfile
 
 app = FastAPI()
 
@@ -42,10 +43,6 @@ async def submit_ship_inspection(request: Request, db: Session = Depends(get_db)
 
     return create_ship_inspection(db, ship_inspection.dict())
 
-
-from io import BytesIO
-
-import tempfile
 
 @app.get("/download/")
 async def download_ship_inspections(db: Session = Depends(get_db)):
