@@ -2,12 +2,9 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
 import pandas as pd
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from db.database import Base, get_db
-from db.models import create_ship_inspection
+from db.models import create_ship_inspection, ShipInspection
 from sqlalchemy.orm import Session
 import schemas
 from db.database import engine
@@ -46,17 +43,36 @@ async def submit_ship_inspection(request: Request, db: Session = Depends(get_db)
     return create_ship_inspection(db, ship_inspection.dict())
 
 
+from io import BytesIO
+
+import tempfile
+
 @app.get("/download/")
-async def download_ship_inspections():
-    # Hier könnten Sie Ihre Funktionen zum Abrufen der gespeicherten Schiffsinspektionen aus der Datenbank aufrufen
-    # Hier nur Beispielcode
-    data = {
-        "Inspection Location": ["Location 1", "Location 2"],
-        "Ship Name": ["Ship A", "Ship B"],
-        "Inspection Details": ["Details 1", "Details 2"],
-        "Numerical Value": [10.5, 20.3]
-    }
-    df = pd.DataFrame(data)
-    filename = "ship_inspections.xlsx"
-    df.to_excel(filename, index=False)
-    return FileResponse(filename, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+async def download_ship_inspections(db: Session = Depends(get_db)):
+    try:
+        inspections = db.query(ShipInspection).all()
+
+        if not inspections:
+            raise HTTPException(status_code=404, detail="No ship inspections found")
+
+        inspection_data = {
+            "Inspection Location": [inspection.inspection_location for inspection in inspections],
+            "Ship Name": [inspection.ship_name for inspection in inspections],
+            "Inspection Details": [inspection.inspection_details for inspection in inspections],
+            "Numerical Value": [inspection.numerical_value for inspection in inspections]
+        }
+
+        df = pd.DataFrame(inspection_data)
+
+        # Erstelle eine temporäre Datei
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
+            filename = tmp_file.name
+
+            # Schreibe den DataFrame in die temporäre Datei
+            df.to_excel(tmp_file, index=False)
+
+        # Gebe die temporäre Datei zurück
+        return FileResponse(filename, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

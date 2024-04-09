@@ -1,13 +1,68 @@
-/* CSS styles */
+/* Global Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
 }
 
+/* Header Styles */
 h1 {
     color: #333;
+    font-size: 1.5em; /* Kleinere Schriftgröße für den Header */
+    margin-bottom: 10px; /* Reduzieren des Abstands nach unten */
 }
 
+/* Paragraph Styles */
 p {
     color: #666;
+    font-size: 1em; /* Kleinere Schriftgröße für Absätze */
+    margin-bottom: 10px; /* Reduzieren des Abstands nach unten */
+}
+
+/* Form Styles */
+form {
+    margin-top: 10px; /* Reduzieren des oberen Abstands */
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px; /* Reduzieren des Abstands nach unten */
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: calc(100% - 12px); /* Reduzieren des Seitenabstands */
+    padding: 6px; /* Reduzieren der Innenpolsterung */
+    margin-top: 4px; /* Reduzieren des oberen Abstands */
+    margin-bottom: 8px; /* Reduzieren des unteren Abstands */
+    font-size: 0.9em; /* Kleinere Schriftgröße für Eingabefelder */
+}
+
+/* Submit Button Styles */
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px; /* Reduzieren der Polsterung */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em; /* Kleinere Schriftgröße für den Submit-Button */
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Link Styles */
+a {
+    display: inline-block; /* Ändern der Anzeige, um den oberen Abstand zu verringern */
+    margin-top: 10px; /* Reduzieren des oberen Abstands */
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9em; /* Kleinere Schriftgröße für Links */
 }
