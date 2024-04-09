@@ -23,6 +23,7 @@ p {
 /* Form Styles */
 form {
     margin-top: 10px; /* Reduzieren des oberen Abstands */
+
 }
 
 label {
@@ -35,7 +36,7 @@ input[type="text"],
 input[type="number"],
 textarea,
 select {
-    width: calc(100% - 12px); /* Reduzieren des Seitenabstands */
+    width: calc(80% - 12px); /* Reduzieren des Seitenabstands */
     padding: 6px; /* Reduzieren der Innenpolsterung */
     margin-top: 4px; /* Reduzieren des oberen Abstands */
     margin-bottom: 8px; /* Reduzieren des unteren Abstands */
@@ -65,4 +66,20 @@ a {
     text-decoration: none;
     color: #666;
     font-size: 0.9em; /* Kleinere Schriftgröße für Links */
+}
+/* Button Styles */
+.download-button {
+    background-color: #008CBA; /* Blue background color */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding for button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor on hover */
+    font-size: 0.9em; /* Font size */
+    text-decoration: none; /* No underline */
+    margin-top: 10px; /* Top margin */
+}
+
+.download-button:hover {
+    background-color: #005f6b; /* Darker blue on hover */
 }
