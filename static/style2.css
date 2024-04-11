@@ -32,8 +32,9 @@ label {
 input[type="text"],
 input[type="number"],
 textarea,
-select {
-    width: calc(100% - 22px); /* Adjusted width for better alignment */
+select,
+input[type="date"] { /* Added styles for date input */
+    width: calc(100% - 22px);
     padding: 10px;
     margin-top: 6px;
     margin-bottom: 12px;

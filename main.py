@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 import schemas
 from db.database import engine
 import tempfile
+import uvicorn
 
 app = FastAPI()
 
@@ -73,3 +74,6 @@ async def download_ship_inspections(db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
