@@ -9,6 +9,21 @@
 </head>
 <body>
     <h1>Ship Inspection App</h1>
+
+    <!-- Einloggen Formular -->
+    <form action="/token" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+
+        <div class="button-container">
+            <input type="submit" value="Login">
+        </div>
+    </form>
+
+    <!-- Inspektion einreichen Formular -->
     <form action="/submit/" method="post">
         <label for="inspection_location">Inspection Location:</label><br>
         <select id="inspection_location" name="inspection_location">

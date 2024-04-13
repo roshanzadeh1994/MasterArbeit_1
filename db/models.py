@@ -1,5 +1,5 @@
 # Importieren Sie benötigte Module
-from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import Column, String, Integer, DateTime,ForeignKey
 from datetime import datetime
 from db.database import Base
 from sqlalchemy.orm import relationship
@@ -34,3 +34,12 @@ def get_all_ship_inspections(db):
 # Funktion zum Abrufen einer einzelnen Schiffsinspektion anhand der ID
 def get_ship_inspection_by_id(db, inspection_id):
     return db.query(ShipInspection).filter(ShipInspection.id == inspection_id).first()
+
+
+class DbUser(Base):
+    __tablename__ = "user"
+
+    id = Column(Integer, index=True, primary_key=True)
+    username = Column(String)
+    password = Column(String)
+    email = Column(String)

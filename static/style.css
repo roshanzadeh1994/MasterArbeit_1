@@ -1,4 +1,4 @@
-/* Global Styles */
+                              /* Global Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #cacdf3;
@@ -16,8 +16,8 @@ h1 {
 
 /* Form Styles */
 form {
-    margin-top: 20px;
-    max-width: 600px;
+    margin-top: -15px;
+    max-width: 500px;
     margin-left: auto;
     margin-right: auto;
     padding: 0 20px; /* Added padding */
@@ -26,14 +26,15 @@ form {
 label {
     font-weight: bold;
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: -14px;
 }
 
 input[type="text"],
 input[type="number"],
 textarea,
-select {
-    width: calc(100% - 22px); /* Adjusted width for better alignment */
+select,
+input[type="date"] { /* Added styles for date input */
+    width: calc(100% - 22px);
     padding: 10px;
     margin-top: 6px;
     margin-bottom: 12px;

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Inspection App</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <h1>Ship Inspection App</h1>
+
+    <!-- Benutzeranmeldung -->
+    <form action="/submit2/" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+
+        <div class="button-container">
+            <input type="submit" value="Login">
+        </div>
+    </form>
+
+    <!-- Formular nur anzeigen, wenn Benutzer authentifiziert ist -->
+    {% if authenticated %}
+    <form action="/submit/" method="post">
+        <!-- Formularfelder hier einfügen -->
+    </form>
+    {% else %}
+    <p>Please login to access the form.</p>
+    {% endif %}
+
+    <div class="button-container">
+        <form action="/download/" method="get">
+            <button type="submit" class="download-button">Download Ship Inspections as Excel</button>
+        </form>
+    </div>
+</body>
+</html>
