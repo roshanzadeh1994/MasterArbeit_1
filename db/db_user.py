@@ -4,6 +4,7 @@ from db.models import DbUser
 from db.hash import Hash
 from fastapi.exceptions import HTTPException
 from fastapi import status
+from db import models
 
 
 # create user
@@ -60,3 +61,7 @@ def update_user(user_id: int, db: Session, request: UserBase2):
     })
     db.commit()
     return "ok"
+
+
+def get_ship_inspections_by_user(db: Session, user_id: int):
+    return db.query(models.ShipInspection).filter(models.ShipInspection.user_id == user_id).all()

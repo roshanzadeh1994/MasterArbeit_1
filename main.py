@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from db.database import Base, get_db
 from db.database import engine
-from routers import router,user_router
+from routers import router, user_router
 from auth import authentication
 
 app = FastAPI()
@@ -26,8 +26,3 @@ async def read_item(request: Request):
 app.include_router(router.router)
 app.include_router(user_router.router)
 app.include_router(authentication.router)
-
-
-
-
-

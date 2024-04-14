@@ -15,6 +15,9 @@ class ShipInspection(Base):
     ship_name = Column(String)
     inspection_details = Column(String)
     numerical_value = Column(Integer)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    # Beziehung zu Benutzer
+    user = relationship("DbUser", back_populates="ship_inspections")
 
 
 # Funktion zum Hinzufügen einer Schiffsinspektion in die Datenbank
@@ -43,3 +46,4 @@ class DbUser(Base):
     username = Column(String)
     password = Column(String)
     email = Column(String)
+    ship_inspections = relationship("ShipInspection", back_populates="user")
