@@ -1,9 +1,16 @@
-# Importieren Sie benötigte Module
-from sqlalchemy import Column, String, Integer, DateTime,ForeignKey
-from datetime import datetime
+from sqlalchemy import Column, String, Integer, ForeignKey
 from db.database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm.session import Session
+
+
+class DbUser(Base):
+    __tablename__ = "user"
+
+    id = Column(Integer, index=True, primary_key=True)
+    username = Column(String)
+    password = Column(String)
+    email = Column(String)
+    items = relationship("ShipInspection", back_populates="user")
 
 
 # Definieren Sie Ihre Datenbankmodelle für die Schiffsinspektion
@@ -17,33 +24,4 @@ class ShipInspection(Base):
     numerical_value = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.id'))
     # Beziehung zu Benutzer
-    user = relationship("DbUser", back_populates="ship_inspections")
-
-
-# Funktion zum Hinzufügen einer Schiffsinspektion in die Datenbank
-def create_ship_inspection(db: Session, inspection_data):
-    inspection = ShipInspection(**inspection_data)
-    db.add(inspection)
-    db.commit()
-    db.refresh(inspection)
-    return inspection
-
-
-# Funktion zum Abrufen aller Schiffsinspektionen aus der Datenbank
-def get_all_ship_inspections(db):
-    return db.query(ShipInspection).all()
-
-
-# Funktion zum Abrufen einer einzelnen Schiffsinspektion anhand der ID
-def get_ship_inspection_by_id(db, inspection_id):
-    return db.query(ShipInspection).filter(ShipInspection.id == inspection_id).first()
-
-
-class DbUser(Base):
-    __tablename__ = "user"
-
-    id = Column(Integer, index=True, primary_key=True)
-    username = Column(String)
-    password = Column(String)
-    email = Column(String)
-    ship_inspections = relationship("ShipInspection", back_populates="user")
+    user = relationship("DbUser", back_populates="items")

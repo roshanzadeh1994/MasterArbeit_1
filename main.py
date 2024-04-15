@@ -14,15 +14,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Create engine and session
 Base.metadata.create_all(bind=engine)
 
-# Create Jinja2Templates instance
-templates = Jinja2Templates(directory="templates")
-
-
-@app.get("/", response_class=HTMLResponse)
-async def read_item(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-
 app.include_router(router.router)
 app.include_router(user_router.router)
 app.include_router(authentication.router)
