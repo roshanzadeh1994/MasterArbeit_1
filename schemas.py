@@ -8,6 +8,7 @@ class ShipInspectionInput(BaseModel):
     ship_name: str
     inspection_details: str
     numerical_value: int
+    user_id: int
 
 
 class UserBase(BaseModel):

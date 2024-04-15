@@ -36,15 +36,15 @@ async def login(request: Request, username: str = Form(...), password: str = For
     form = OAuth2PasswordRequestForm(username=username, password=password)
     token_data = get_token(form, db)
     # Nach erfolgreichem Login auf die Indexseite umleiten
-    return RedirectResponse(url="/formular")
+    return RedirectResponse(url="/login/formular")
 
 
-@router.get("/formular", response_class=HTMLResponse, dependencies=[Depends(check_authentication)])
+@router.get("/login/formular", response_class=HTMLResponse, dependencies=[Depends(check_authentication)])
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@router.post("/formular", response_class=HTMLResponse)
+@router.post("/login/formular", response_class=HTMLResponse)
 async def process_form(request: Request, username: str = Form(...), password: str = Form(...)):
     # Hier können Sie die Formulardaten verarbeiten, z.B. Authentifizierung, Überprüfung usw.
     # Nach der Verarbeitung können Sie den Benutzer an eine andere Seite weiterleiten oder eine Antwort zurückgeben
@@ -57,7 +57,7 @@ async def process_form(request: Request, username: str = Form(...), password: st
 #                                  current_user: schemas.UserAuth = Depends(get_current_user)):
 
 
-@router.post("/submit/")
+@router.post("/login/formular/submit/")
 async def submit_ship_inspection(request: Request, db: Session = Depends(
     get_db)):  # , current_user: schemas.UserAuth = Depends(get_current_user)
     form_data = await request.form()
