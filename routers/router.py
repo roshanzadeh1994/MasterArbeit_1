@@ -1,4 +1,6 @@
 import pandas as pd
+
+from db import db_user
 from db.models import ShipInspection
 from db.db_ship import create_ship_inspection
 import schemas
@@ -40,8 +42,8 @@ async def login(request: Request, username: str = Form(...), password: str = For
 
 
 @router.get("/login/formular", response_class=HTMLResponse, dependencies=[Depends(check_authentication)])
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+async def index(request: Request, current_user: schemas.UserAuth = Depends(get_current_user)):
+    return templates.TemplateResponse("index.html", {"request": request, "username": current_user.username})
 
 
 @router.post("/login/formular", response_class=HTMLResponse)
@@ -110,3 +112,4 @@ async def download_ship_inspections(db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
