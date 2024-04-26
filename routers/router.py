@@ -4,7 +4,7 @@ from db.db_ship import create_ship_inspection
 import schemas
 import tempfile
 from fastapi.responses import HTMLResponse, FileResponse
-from fastapi import APIRouter, Depends, HTTPException, status,Form
+from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -19,6 +19,10 @@ from schemas import UserAuth, UserBase
 from fastapi import FastAPI, Request
 from db.db_user import create_user
 from fastapi.responses import RedirectResponse
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+from fastapi.responses import RedirectResponse, HTMLResponse, Response
+from fastapi import Cookie
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -39,10 +43,6 @@ async def index(request: Request):
 
 """
 
-from typing import Optional
-from fastapi.responses import RedirectResponse, HTMLResponse, Response
-from fastapi import Cookie
-
 
 @router.post("/login", response_class=RedirectResponse)
 def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -50,10 +50,15 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     if not user or not Hash.verify(user.password, request.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
     access_token = oauth2.create_access_token(data={"sub": request.username})
-    # Save user information in cookie
+
+    # Ablaufzeit für Cookies festlegen (z.B. 1 Stunde)
+    expires = datetime.utcnow() + timedelta(seconds=50)
+    expires_utc = expires.replace(tzinfo=timezone.utc)  # Setze die Zeitzone auf UTC
+
+    # Save user information in cookie with expiration time
     response = RedirectResponse(url="/login/formular")
-    response.set_cookie(key="user_id", value=str(user.id))
-    response.set_cookie(key="username", value=user.username)
+    response.set_cookie(key="user_id", value=str(user.id), expires=expires_utc)
+    response.set_cookie(key="username", value=user.username, expires=expires_utc)
     return response
 
 
@@ -118,6 +123,7 @@ def signup(username: str = Form(...), email: str = Form(...), password: str = Fo
     user = create_user(db, schemas.UserBase(username=username, email=email, password=password))
     return user
 
+
 """
 @router.post("/signup", response_model=UserBase)
 def create_new_user(user: UserBase, db: Session = Depends(get_db)):
@@ -125,6 +131,7 @@ def create_new_user(user: UserBase, db: Session = Depends(get_db)):
                                                    password=Hash.bcrypt(user.password)))
     return new_user
 """
+
 
 @router.get("/download/")
 async def download_ship_inspections(db: Session = Depends(get_db)):
