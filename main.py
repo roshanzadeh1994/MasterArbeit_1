@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from db.database import Base, get_db
 from db.database import engine
-from routers import router, user_router, router2
+from routers import  user_router, router
 from auth import authentication
 
 app = FastAPI()
@@ -12,9 +12,8 @@ app = FastAPI()
 # Create engine and session
 
 
-# app.include_router(router.router)
 app.include_router(user_router.router)
-app.include_router(router2.router)
+app.include_router(router.router)
 app.include_router(authentication.router)
 
 Base.metadata.create_all(bind=engine)
