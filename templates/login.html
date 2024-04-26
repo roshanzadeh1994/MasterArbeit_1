@@ -12,15 +12,16 @@
         background-color: #f4f4f4;
     }
     .container {
-        width: 300px;
+        width: 600px;
         margin: 50px auto;
-        background: #fff;
-        padding: 20px;
+        background: #8a8c91;
+        padding: 30px;
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     h2 {
         text-align: center;
+        margin-bottom: 30px;
     }
     label {
         font-weight: bold;
@@ -29,28 +30,39 @@
     input[type="password"],
     input[type="submit"],
     button[type="submit"] {
-        width: calc(100% - 22px); /* 22px für den Border berücksichtigen */
+        width: 100%;
         padding: 10px;
-        margin-top: 5px;
-        margin-bottom: 10px;
+        margin-top: 10px;
+        margin-bottom: 20px;
         border: 1px solid #ccc;
         border-radius: 3px;
         box-sizing: border-box;
+        transition: background-color 0.3s ease;
     }
-    input[type="submit"] {
+    input[type="submit"],
+    button[type="submit"] {
         background-color: #4caf50;
         color: white;
         cursor: pointer;
         font-size: 16px;
     }
-    button[type="submit"] {
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-        font-size: 14px;
-    }
+    input[type="submit"]:hover,
     button[type="submit"]:hover {
         background-color: #45a049;
+    }
+    button[type="submit"] {
+        font-size: 14px;
+    }
+    .signup-button {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    .signup-button button {
+        background-color: #2196f3;
+    }
+    .signup-button button:hover {
+        background-color: #1e87dc;
     }
 </style>
 </head>
@@ -65,9 +77,12 @@
         <input type="password" id="password" name="password"><br><br>
         <input type="submit" value="Login">
     </form>
+    <div class="signup-button">
+         <!-- Button zum Navigieren zur Signup-Seite -->
     <form action="/signup">
         <button type="submit">Sign Up</button>
     </form>
+    </div>
 </div>
 
 </body>
