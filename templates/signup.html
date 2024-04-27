@@ -9,43 +9,53 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f2f2f2;
         }
+
         .container {
-            width: 400px;
+            width: 50%;
             margin: 50px auto;
-            background: #ffffff;
-            padding: 30px;
+            background-color: #fff;
+            padding: 20px;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
-            margin-bottom: 30px;
         }
+
+        form {
+            margin-top: 20px;
+        }
+
         label {
             font-weight: bold;
         }
+
         input[type="text"],
-        input[type="password"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
         input[type="submit"] {
             width: 100%;
             padding: 10px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease;
-        }
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: white;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
         }
+
         input[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -57,7 +67,7 @@
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username"><br>
         <label for="email">Email:</label><br>
-        <input type="text" id="email" name="email"><br>
+        <input type="email" id="email" name="email"><br>
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password"><br><br>
         <input type="submit" value="Signup">

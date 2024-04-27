@@ -27,22 +27,6 @@ from fastapi import Cookie
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-"""
-@router.post("/login", response_class=RedirectResponse)
-def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.DbUser).filter(models.DbUser.username == request.username).first()
-    if not user or not Hash.verify(user.password, request.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
-    access_token = oauth2.create_access_token(data={"sub": request.username})
-    return RedirectResponse(url="/login/formular")
-
-
-@router.post("/login/formular", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-"""
-
 
 @router.post("/login", response_class=RedirectResponse)
 def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -73,12 +57,14 @@ async def index(request: Request, user_id: Optional[str] = Cookie(None), usernam
 
 
 @router.post("/login/formular", response_class=HTMLResponse)
-async def process_login_form(request: Request, db: Session = Depends(get_db)):
+async def process_login_form(request: Request, user_id: Optional[str] = Cookie(None),
+                             username: Optional[str] = Cookie(None)):
     # Hier den Login-Logik durchführen, einschließlich der Überprüfung von Benutzername und Passwort
     # Nach erfolgreicher Überprüfung weiterleiten oder Fehler behandeln
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request, "user_id": user_id, "username": username})
 
 
+"""
 @router.post("/login/formular/submit/")
 async def submit_ship_inspection(request: Request, db: Session = Depends(get_db),
                                  user_id: Optional[str] = Cookie(None)):
@@ -101,6 +87,38 @@ async def submit_ship_inspection(request: Request, db: Session = Depends(get_db)
 
     return create_ship_inspection(db, ship_inspection.dict())
 
+"""
+
+
+@router.post("/login/formular/submit/", response_class=HTMLResponse)
+async def submit_ship_inspection(request: Request, db: Session = Depends(get_db),
+                                 user_id: Optional[str] = Cookie(None)):
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
+
+    form_data = await request.form()
+    inspection_location = form_data.get("inspection_location")
+    ship_name = form_data.get("ship_name")
+    inspection_details = form_data.get("inspection_details")
+    numerical_value = int(form_data.get("numerical_value"))
+
+    ship_inspection = schemas.ShipInspectionInput(
+        inspection_location=inspection_location,
+        ship_name=ship_name,
+        inspection_details=inspection_details,
+        numerical_value=numerical_value,
+        user_id=int(user_id),  # Convert user_id to int
+    )
+
+    # Inspektion erstellen
+    create_ship_inspection(db, ship_inspection.dict())
+
+    # Alle Inspektionsinformationen abrufen
+    all_inspections = db.query(ShipInspection).filter_by(user_id=int(user_id)).all()
+
+    # Vorlage für die Erfolgsseite mit allen Inspektionsinformationen und Download-Button rendern
+    return templates.TemplateResponse("show_all_inspections.html", {"request": request, "inspections": all_inspections})
+
 
 @router.get("/", response_class=HTMLResponse)
 async def login(request: Request):
@@ -112,7 +130,7 @@ async def signup(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
 
 
-@router.post("/signup/submit")
+@router.post("/signup/submit", response_class=RedirectResponse)
 def signup(username: str = Form(...), email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     # Überprüfe, ob der Benutzer bereits existiert
     existing_user = db.query(models.DbUser).filter(models.DbUser.username == username).first()
@@ -121,16 +139,8 @@ def signup(username: str = Form(...), email: str = Form(...), password: str = Fo
 
     # Benutzer erstellen
     user = create_user(db, schemas.UserBase(username=username, email=email, password=password))
-    return user
-
-
-"""
-@router.post("/signup", response_model=UserBase)
-def create_new_user(user: UserBase, db: Session = Depends(get_db)):
-    new_user = create_user(db=db, request=UserBase(username=user.username, email=user.email,
-                                                   password=Hash.bcrypt(user.password)))
-    return new_user
-"""
+    # return user
+    return RedirectResponse(url="/login")
 
 
 @router.get("/download/")

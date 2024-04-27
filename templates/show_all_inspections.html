@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submission Success</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .inspection-info {
+            margin-bottom: 20px;
+        }
+        .download-container {
+            margin-top: 20px;
+        }
+        .download-container button {
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .download-container button:hover {
+            background-color: #005f6b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inspection Submitted Successfully</h1>
+    <div class="inspection-info">
+        <p>Last Submitted Inspection:</p>
+        <p>Location: {{ inspections[-1].inspection_location }}</p>
+        <p>Ship Name: {{ inspections[-1].ship_name }}</p>
+        <p>Inspection Date: {{ inspections[-1].inspection_date }}</p>
+        <p>Inspection Details: {{ inspections[-1].inspection_details }}</p>
+        <p>Numerical Value: {{ inspections[-1].numerical_value }}</p>
+        <p>User ID: {{ inspections[-1].user_id }}</p>
+    </div>
+    <div class="download-container">
+        <form action="/download/" method="get">
+            <button type="submit">Download Inspections</button>
+        </form>
+    </div>
+</body>
+</html>
