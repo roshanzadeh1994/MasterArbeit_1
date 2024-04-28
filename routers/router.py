@@ -33,6 +33,7 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     user = db.query(models.DbUser).filter(models.DbUser.username == request.username).first()
     if not user or not Hash.verify(user.password, request.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+
     access_token = oauth2.create_access_token(data={"sub": request.username})
 
     # Ablaufzeit für Cookies festlegen (z.B. 1 Stunde)
@@ -62,32 +63,6 @@ async def process_login_form(request: Request, user_id: Optional[str] = Cookie(N
     # Hier den Login-Logik durchführen, einschließlich der Überprüfung von Benutzername und Passwort
     # Nach erfolgreicher Überprüfung weiterleiten oder Fehler behandeln
     return templates.TemplateResponse("index.html", {"request": request, "user_id": user_id, "username": username})
-
-
-"""
-@router.post("/login/formular/submit/")
-async def submit_ship_inspection(request: Request, db: Session = Depends(get_db),
-                                 user_id: Optional[str] = Cookie(None)):
-    if not user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
-
-    form_data = await request.form()
-    inspection_location = form_data.get("inspection_location")
-    ship_name = form_data.get("ship_name")
-    inspection_details = form_data.get("inspection_details")
-    numerical_value = int(form_data.get("numerical_value"))
-
-    ship_inspection = schemas.ShipInspectionInput(
-        inspection_location=inspection_location,
-        ship_name=ship_name,
-        inspection_details=inspection_details,
-        numerical_value=numerical_value,
-        user_id=int(user_id),  # Convert user_id to int
-    )
-
-    return create_ship_inspection(db, ship_inspection.dict())
-
-"""
 
 
 @router.post("/login/formular/submit/", response_class=HTMLResponse)
@@ -125,6 +100,11 @@ async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
+@router.post("/", response_class=HTMLResponse)
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
 @router.get("/signup/", response_class=HTMLResponse)
 async def signup(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
@@ -140,7 +120,7 @@ def signup(username: str = Form(...), email: str = Form(...), password: str = Fo
     # Benutzer erstellen
     user = create_user(db, schemas.UserBase(username=username, email=email, password=password))
     # return user
-    return RedirectResponse(url="/login")
+    return RedirectResponse(url="/")
 
 
 @router.get("/download/")
