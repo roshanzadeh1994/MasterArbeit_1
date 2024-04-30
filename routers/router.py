@@ -95,12 +95,12 @@ async def submit_ship_inspection(request: Request, db: Session = Depends(get_db)
     return templates.TemplateResponse("show_all_inspections.html", {"request": request, "inspections": all_inspections})
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@router.post("/", response_class=HTMLResponse)
+@router.post("/login", response_class=HTMLResponse)
 async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
@@ -120,7 +120,17 @@ def signup(username: str = Form(...), email: str = Form(...), password: str = Fo
     # Benutzer erstellen
     user = create_user(db, schemas.UserBase(username=username, email=email, password=password))
     # return user
-    return RedirectResponse(url="/")
+    return RedirectResponse(url="/login")
+
+
+@router.get("/", response_class=HTMLResponse)
+async def homepage(request: Request):
+    return templates.TemplateResponse("homepage.html", {"request": request})
+
+
+@router.post("/", response_class=HTMLResponse)
+async def homepage(request: Request):
+    return templates.TemplateResponse("homepage.html", {"request": request})
 
 
 @router.get("/download/")

@@ -10,6 +10,9 @@
             margin: 0;
             padding: 0;
             background-color: #f2f2f2;
+            background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
+            background-size: 2000px 750px; /* Breite und Höhe des Hintergrundbildes in Pixeln */
+            background-repeat: no-repeat;
         }
 
         .container {
@@ -18,17 +21,13 @@
             background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
             text-align: center;
             color: #333333;
-            margin-bottom: 20px;
-        }
-
-        form {
-            margin-top: 20px;
+            margin-bottom: 30px;
         }
 
         label {
@@ -37,39 +36,37 @@
 
         input[type="text"],
         input[type="email"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="submit"],
+        .home-button {
             width: 100%;
             padding: 12px;
-            margin-bottom: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            text-align: center;
         }
 
         input[type="submit"] {
-            width: 100%;
-            padding: 12px;
             background-color: #007bff;
             color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
         }
 
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
         .home-button {
-            width: 100%;
-            padding: 7px;
             background-color: #ce5645;
             color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 11px;
         }
+
         .home-button:hover {
             background-color: #ce5533;
         }
@@ -78,7 +75,7 @@
 <body>
 
 <div class="container">
-    <h2>Signup</h2>
+    <h2>Konto erstellen</h2>
     <form action="/signup/submit" method="post">
         <label for="username">Username:</label><br>
         <input type="text" id="username" name="username" required><br>

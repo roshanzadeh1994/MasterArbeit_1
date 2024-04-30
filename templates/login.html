@@ -10,6 +10,10 @@
         margin: 0;
         padding: 0;
         background-color: #f4f4f4;
+        background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
+        background-size: 2000px 750px; /* Breite und Höhe des Hintergrundbildes in Pixeln */
+        background-repeat: no-repeat;
+
     }
     .container {
         width: 400px;
@@ -28,8 +32,7 @@
         font-weight: bold;
     }
     input[type="text"],
-    input[type="password"],
-    input[type="submit"] {
+    input[type="password"] {
         width: 100%;
         padding: 12px;
         margin-top: 10px;
@@ -38,33 +41,48 @@
         border-radius: 5px;
         box-sizing: border-box;
         transition: background-color 0.3s ease;
+        font-size: 16px;
+        cursor: pointer;
+        display: block;
+    }
+    input[type="submit"],
+    .home-button,
+    .signup-button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+        cursor: pointer;
+        display: block;
+        text-align: center;
     }
     input[type="submit"] {
         background-color: #4caf50;
         color: white;
-        cursor: pointer;
-        font-size: 16px;
-        margin-top: 0;
     }
-    input[type="submit"]:hover {
+    input[type="submit"]:hover,
+    .signup-button:hover,
+    .home-button:hover {
         background-color: #45a049;
     }
     .signup-button {
-        text-align: center;
-        margin-top: 20px;
-    }
-    .signup-button button {
         background-color: #2196f3;
         color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 12px;
-        margin-top: 0;
     }
-    .signup-button button:hover {
+    .signup-button:hover {
         background-color: #1e87dc;
+    }
+    .home-button {
+        background-color: #ce5565;
+        color: white;
+    }
+    .home-button:hover {
+        background-color: #ce5533;
     }
 </style>
 </head>
@@ -79,11 +97,10 @@
         <input type="password" id="password" name="password" required><br><br>
         <input type="submit" value="Login">
     </form>
-    <div class="signup-button">
-        <form action="/signup">
-            <button type="submit">Sign Up</button>
-        </form>
-    </div>
+
+    <a href="/signup" class="signup-button">Sign Up</a>
+    <a href="/" class="home-button">Home</a>
+
 </div>
 
 </body>
