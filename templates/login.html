@@ -12,54 +12,56 @@
         background-color: #f4f4f4;
     }
     .container {
-        width: 600px;
+        width: 400px;
         margin: 50px auto;
-        background: #8a8c91;
+        background: #ffffff;
         padding: 30px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     }
     h2 {
         text-align: center;
         margin-bottom: 30px;
+        color: #333333;
     }
     label {
         font-weight: bold;
     }
     input[type="text"],
     input[type="password"],
-    input[type="submit"],
-    button[type="submit"] {
+    input[type="submit"] {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         margin-top: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         border: 1px solid #ccc;
-        border-radius: 3px;
+        border-radius: 5px;
         box-sizing: border-box;
         transition: background-color 0.3s ease;
     }
-    input[type="submit"],
-    button[type="submit"] {
+    input[type="submit"] {
         background-color: #4caf50;
         color: white;
         cursor: pointer;
         font-size: 16px;
+        margin-top: 0;
     }
-    input[type="submit"]:hover,
-    button[type="submit"]:hover {
+    input[type="submit"]:hover {
         background-color: #45a049;
     }
-    button[type="submit"] {
-        font-size: 14px;
-    }
     .signup-button {
-        display: block;
-        width: 100%;
         text-align: center;
+        margin-top: 20px;
     }
     .signup-button button {
         background-color: #2196f3;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-top: 0;
     }
     .signup-button button:hover {
         background-color: #1e87dc;
@@ -78,10 +80,9 @@
         <input type="submit" value="Login">
     </form>
     <div class="signup-button">
-         <!-- Button zum Navigieren zur Signup-Seite -->
-    <form action="/signup">
-        <button type="submit">Sign Up</button>
-    </form>
+        <form action="/signup">
+            <button type="submit">Sign Up</button>
+        </form>
     </div>
 </div>
 

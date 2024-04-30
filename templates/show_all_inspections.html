@@ -1,51 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submission Success</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             color: #333;
             margin-bottom: 10px;
+            text-align: center;
         }
         .inspection-info {
             margin-bottom: 20px;
         }
         .download-container {
             margin-top: 20px;
+            text-align: center;
         }
         .download-container button {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #008CBA;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
         }
         .download-container button:hover {
             background-color: #005f6b;
         }
+        .home-button {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .home-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
-    <h1>Inspection Submitted Successfully</h1>
-    <div class="inspection-info">
-        <p>Last Submitted Inspection:</p>
-        <p>Location: {{ inspections[-1].inspection_location }}</p>
-        <p>Ship Name: {{ inspections[-1].ship_name }}</p>
-        <p>Inspection Date: {{ inspections[-1].inspection_date }}</p>
-        <p>Inspection Details: {{ inspections[-1].inspection_details }}</p>
-        <p>Numerical Value: {{ inspections[-1].numerical_value }}</p>
-        <p>User ID: {{ inspections[-1].user_id }}</p>
-    </div>
-    <div class="download-container">
-        <form action="/download/" method="get">
-            <button type="submit">Download Inspections</button>
-        </form>
+    <div class="container">
+        <h1>Inspection Submitted Successfully</h1>
+        <div class="inspection-info">
+            <p>Last Submitted Inspection:</p>
+            <p>Location: {{ inspections[-1].inspection_location }}</p>
+            <p>Ship Name: {{ inspections[-1].ship_name }}</p>
+            <p>Inspection Date: {{ inspections[-1].inspection_date }}</p>
+            <p>Inspection Details: {{ inspections[-1].inspection_details }}</p>
+            <p>Numerical Value: {{ inspections[-1].numerical_value }}</p>
+            <p>User ID: {{ inspections[-1].user_id }}</p>
+        </div>
+        <div class="download-container">
+            <form action="/download/" method="get">
+                <button type="submit">Download Inspections</button>
+            </form>
+            <a href="/" class="home-button">Home</a>
+        </div>
     </div>
 </body>
 </html>
