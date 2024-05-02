@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey,Date
 from db.database import Base
 from sqlalchemy.orm import relationship
 
@@ -20,6 +20,7 @@ class ShipInspection(Base):
     id = Column(Integer, index=True, primary_key=True)
     inspection_location = Column(String)
     ship_name = Column(String)
+    inspection_date = Column(Date)
     inspection_details = Column(String)
     numerical_value = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.id'))

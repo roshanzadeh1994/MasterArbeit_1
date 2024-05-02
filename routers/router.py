@@ -60,8 +60,6 @@ async def index(request: Request, user_id: Optional[str] = Cookie(None), usernam
 @router.post("/login/formular", response_class=HTMLResponse)
 async def process_login_form(request: Request, user_id: Optional[str] = Cookie(None),
                              username: Optional[str] = Cookie(None)):
-    # Hier den Login-Logik durchführen, einschließlich der Überprüfung von Benutzername und Passwort
-    # Nach erfolgreicher Überprüfung weiterleiten oder Fehler behandeln
     return templates.TemplateResponse("index.html", {"request": request, "user_id": user_id, "username": username})
 
 
@@ -74,12 +72,18 @@ async def submit_ship_inspection(request: Request, db: Session = Depends(get_db)
     form_data = await request.form()
     inspection_location = form_data.get("inspection_location")
     ship_name = form_data.get("ship_name")
+    inspection_date = form_data.get("inspection_date")
     inspection_details = form_data.get("inspection_details")
     numerical_value = int(form_data.get("numerical_value"))
+
+    # Convert date string to datetime object
+    if inspection_date:
+        inspection_date = datetime.strptime(inspection_date, "%Y-%m-%d").date()
 
     ship_inspection = schemas.ShipInspectionInput(
         inspection_location=inspection_location,
         ship_name=ship_name,
+        inspection_date=inspection_date,
         inspection_details=inspection_details,
         numerical_value=numerical_value,
         user_id=int(user_id),  # Convert user_id to int
@@ -144,6 +148,7 @@ async def download_ship_inspections(db: Session = Depends(get_db)):
         inspection_data = {
             "Inspection Location": [inspection.inspection_location for inspection in inspections],
             "Ship Name": [inspection.ship_name for inspection in inspections],
+            "Inspection Date": [inspection.inspection_date for inspection in inspections],
             "Inspection Details": [inspection.inspection_details for inspection in inspections],
             "Numerical Value": [inspection.numerical_value for inspection in inspections],
             "User_id": [inspection.user_id for inspection in inspections]
