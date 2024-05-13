@@ -9,12 +9,12 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
-            background-size: 1930px 1200px; /* Breite und Höhe des Hintergrundbildes in Pixeln */
+            background-image: url('http://127.0.0.1:8000/static/111.jpg');
+            background-size: cover; /* Hintergrundbild so skalieren, dass es den gesamten Bildschirm bedeckt */
             background-repeat: no-repeat;
             background-position: center;
             color: #ffffff;
-            transition: background-color 0.5s; /* Hinzugefügt für den Übergangseffekt */
+            transition: background-color 0.5s;
         }
 
         .container {
@@ -25,20 +25,19 @@
         }
 
         .text {
-        margin-bottom: 167px;
-
+            margin-bottom: 167px;
         }
 
         h1 {
             font-size: 48px;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Schatteneffekt für den Titel */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         p {
             font-size: 24px;
             margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Schatteneffekt für den Text */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .button-container {
@@ -61,21 +60,47 @@
 
         .button:hover {
             background-color: #45a049;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5); /* Hinzugefügter Schatten beim Hover */
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
         }
+
+        /* Media Queries für verschiedene Bildschirmgrößen */
+        @media only screen and (max-width: 600px) {
+            /* Anpassungen für kleine Bildschirme (z.B. Smartphones) */
+            .container {
+                max-width: 90%;
+                margin: 30px auto;
+            }
+            h1 {
+                font-size: 36px;
+            }
+            p {
+                font-size: 18px;
+            }
+        }
+
+        @media only screen and (min-width: 601px) and (max-width: 1024px) {
+            /* Anpassungen für mittelgroße Bildschirme (z.B. Tablets wie iPad) */
+            .container {
+                max-width: 70%;
+            }
+            h1 {
+                font-size: 42px;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="text">
+<div class="container">
+    <div class="text">
         <h1>W210 & E87</h1>
-        <p>website Amir BMW und Nima Mercedes (X76 = M9).</p>
+        <p>Demo für Masterarbeit von Roshanzadeh</p>
 
         <div class="button-container">
             <a href="/login" class="button">Login</a>
             <a href="/signup" class="button">Signup</a>
         </div>
-             </div>
     </div>
+</div>
 </body>
 </html>

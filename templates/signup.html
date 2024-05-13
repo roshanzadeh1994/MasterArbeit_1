@@ -11,12 +11,13 @@
             padding: 0;
             background-color: #f2f2f2;
             background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
-            background-size: 2000px 750px; /* Breite und Höhe des Hintergrundbildes in Pixeln */
+            background-size: cover; /* Hintergrundbild an den Bildschirm anpassen */
             background-repeat: no-repeat;
         }
 
         .container {
-            width: 400px;
+            width: 90%; /* Breite des Containers anpassen */
+            max-width: 400px; /* Maximale Breite für bessere Lesbarkeit */
             margin: 50px auto;
             background-color: #ffffff;
             padding: 30px;
@@ -69,6 +70,20 @@
 
         .home-button:hover {
             background-color: #ce5533;
+        }
+
+        /* Media Query für Tablet */
+        @media only screen and (max-width: 768px) {
+            .container {
+                width: 80%; /* Anpassen der Breite für Tablet */
+            }
+        }
+
+        /* Media Query für Mobilgeräte */
+        @media only screen and (max-width: 480px) {
+            .container {
+                width: 95%; /* Anpassen der Breite für Mobilgeräte */
+            }
         }
     </style>
 </head>

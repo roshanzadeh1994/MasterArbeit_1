@@ -11,11 +11,13 @@
             padding: 0;
             background-color: #f0f0f0;
             background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
-            background-size: 2000px 750px; /* Breite und Höhe des Hintergrundbildes in Pixeln */
+            background-size: cover; /* Use 'cover' for better responsiveness */
             background-repeat: no-repeat;
+            background-position: center;
         }
 
         .container {
+            width: 90%; /* Adjusted width for better responsiveness */
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
@@ -47,7 +49,7 @@
         input[type="date"],
         textarea,
         select {
-            width: calc(100% - 24px); /* 100% width minus padding and border */
+            width: 100%;
             padding: 12px;
             margin-top: 5px;
             border: 1px solid #ccc;
@@ -58,7 +60,7 @@
         input[type="submit"],
         .download-button,
         .home-button {
-            width: calc(100% - 24px); /* 100% width minus padding and border */
+            width: 100%;
             padding: 12px;
             margin-top: 10px;
             border: none;
@@ -92,6 +94,20 @@
             background-color: #ce5565;
             color: white;
         }
+
+        /* Media Query for Tablet */
+        @media only screen and (max-width: 768px) {
+            .container {
+                width: 80%;
+            }
+        }
+
+        /* Media Query for Mobile */
+        @media only screen and (max-width: 480px) {
+            .container {
+                width: 95%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -114,16 +130,16 @@
             </select><br>
 
             <label for="ship_name">Ship Name:</label><br>
-            <input type="text" id="ship_name" name="ship_name"><br>
+            <input type="text" id="ship_name" name="ship_name" required><br>
 
             <label for="inspection_date">Inspection Date:</label><br>
-            <input type="date" id="inspection_date" name="inspection_date"><br>
+            <input type="date" id="inspection_date" name="inspection_date" required><br>
 
             <label for="inspection_details">Inspection Details:</label><br>
             <textarea id="inspection_details" name="inspection_details"></textarea><br>
 
-            <label for="numerical_value">Numerical Value:</label><br>
-            <input type="number" id="numerical_value" name="numerical_value"><br>
+            <label for="numerical_value">PS:</label><br>
+            <input type="number" id="numerical_value" name="numerical_value" required><br>
 
             <div class="button-container">
                 <input type="submit" value="Submit">

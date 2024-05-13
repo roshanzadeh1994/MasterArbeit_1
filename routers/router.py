@@ -29,21 +29,27 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/login", response_class=RedirectResponse)
-def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.DbUser).filter(models.DbUser.username == request.username).first()
-    if not user or not Hash.verify(user.password, request.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
+async def login(request: Request, db: Session = Depends(get_db)):
+    form_data = await request.form()
+    username = form_data.get('username')
+    password = form_data.get('password')
 
-    access_token = oauth2.create_access_token(data={"sub": request.username})
+    user = db.query(models.DbUser).filter(models.DbUser.username == username).first()
+    if not user or not Hash.verify(user.password, password):
+        # Render the login page with an error message
+        return templates.TemplateResponse("invalidUserPassword.html",
+                                          {"request": request, "error": "Invalid username or password"})
+
+    access_token = oauth2.create_access_token(data={"sub": username})
 
     # Ablaufzeit für Cookies festlegen (z.B. 1 Stunde)
-    expires = datetime.utcnow() + timedelta(seconds=95)
+    expires = datetime.utcnow() + timedelta(seconds=50)
     expires_utc = expires.replace(tzinfo=timezone.utc)  # Setze die Zeitzone auf UTC
 
     # Save user information in cookie with expiration time
     response = RedirectResponse(url="/login/formular")
     response.set_cookie(key="user_id", value=str(user.id), expires=expires_utc)
-    response.set_cookie(key="username", value=user.username, expires=expires_utc)
+    response.set_cookie(key="username", value=username, expires=expires_utc)
     return response
 
 
@@ -150,7 +156,7 @@ async def download_ship_inspections(db: Session = Depends(get_db)):
             "Ship Name": [inspection.ship_name for inspection in inspections],
             "Inspection Date": [inspection.inspection_date for inspection in inspections],
             "Inspection Details": [inspection.inspection_details for inspection in inspections],
-            "Numerical Value": [inspection.numerical_value for inspection in inspections],
+            "PS": [inspection.numerical_value for inspection in inspections],
             "User_id": [inspection.user_id for inspection in inspections]
 
         }

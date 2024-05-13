@@ -11,10 +11,11 @@
             padding: 0;
             background-color: #f0f0f0;
             background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
-            background-size: 2000px 750px; /* Breite und Höhe des Hintergrundbildes in Pixeln */
+            background-size: cover; /* Hintergrundbild an den Bildschirm anpassen */
             background-repeat: no-repeat;
         }
         .container {
+            width: 90%; /* Breite des Containers anpassen */
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
@@ -61,6 +62,20 @@
         .home-button:hover {
             background-color: #ce5533;
         }
+
+        /* Media Query für Tablet */
+        @media only screen and (max-width: 768px) {
+            .container {
+                width: 80%; /* Anpassen der Breite für Tablet */
+            }
+        }
+
+        /* Media Query für Mobilgeräte */
+        @media only screen and (max-width: 480px) {
+            .container {
+                width: 95%; /* Anpassen der Breite für Mobilgeräte */
+            }
+        }
     </style>
 </head>
 <body>
@@ -72,7 +87,7 @@
             <p>Ship Name: {{ inspections[-1].ship_name }}</p>
             <p>Inspection Date: {{ inspections[-1].inspection_date }}</p>
             <p>Inspection Details: {{ inspections[-1].inspection_details }}</p>
-            <p>Numerical Value: {{ inspections[-1].numerical_value }}</p>
+            <p>PS: {{ inspections[-1].numerical_value }}</p>
             <p>User ID: {{ inspections[-1].user_id }}</p>
         </div>
         <div class="download-container">
