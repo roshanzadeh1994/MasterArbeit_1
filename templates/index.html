@@ -114,12 +114,14 @@
     <div class="container">
         <h1>Ship Inspection App</h1>
         <div class="welcome-message">
-            <p>Welcome, <strong>{{ username }}</strong>. Your user ID: <strong>{{ user_id }}</strong>.</p>
+            <p>Welcome, <strong>{{ username }}</strong>. Your user ID is: <strong>{{ user_id }}</strong>.</p>
         </div>
         <form action="/login/formular/submit/" method="post">
             <label for="inspection_location">Inspection Location:</label><br>
             <select id="inspection_location" name="inspection_location">
                 <option value="berlin">Berlin</option>
+                <option value="greifswald">Greifswald</option>
+                <option value="hamburg">Hamburg</option>
                 <option value="mashhad">Mashhad</option>
                 <option value="tehran">Tehran</option>
                 <option value="stralsund">Stralsund</option>
@@ -138,7 +140,7 @@
             <label for="inspection_details">Inspection Details:</label><br>
             <textarea id="inspection_details" name="inspection_details"></textarea><br>
 
-            <label for="numerical_value">PS:</label><br>
+            <label for="numerical_value">numerical_value:</label><br>
             <input type="number" id="numerical_value" name="numerical_value" required><br>
 
             <div class="button-container">
