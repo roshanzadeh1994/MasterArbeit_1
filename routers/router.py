@@ -156,7 +156,7 @@ async def download_ship_inspections(db: Session = Depends(get_db)):
             "Ship Name": [inspection.ship_name for inspection in inspections],
             "Inspection Date": [inspection.inspection_date for inspection in inspections],
             "Inspection Details": [inspection.inspection_details for inspection in inspections],
-            "PS": [inspection.numerical_value for inspection in inspections],
+            "Numerical value": [inspection.numerical_value for inspection in inspections],
             "User_id": [inspection.user_id for inspection in inspections]
 
         }
