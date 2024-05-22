@@ -5,20 +5,14 @@ import schemas
 import tempfile
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi import APIRouter, Depends, HTTPException, status, Form
-from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm.session import Session
-from auth.oauth2 import get_current_user
 from db import models
 from db.database import get_db
 from db.hash import Hash
 from auth import oauth2
-from db.models import DbUser
-from schemas import UserAuth, UserBase
 from fastapi import FastAPI, Request
 from db.db_user import create_user
-from fastapi.responses import RedirectResponse
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from fastapi.responses import RedirectResponse, HTMLResponse, Response
