@@ -9,30 +9,34 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f2f2f2;
-            background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
-            background-size: cover; /* Hintergrundbild an den Bildschirm anpassen */
-            background-repeat: no-repeat;
+            background: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            width: 90%; /* Breite des Containers anpassen */
-            max-width: 400px; /* Maximale Breite für bessere Lesbarkeit */
-            margin: 50px auto;
-            background-color: #ffffff;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
         }
 
         h2 {
-            text-align: center;
-            color: #333333;
+            color: #333;
             margin-bottom: 30px;
         }
 
         label {
             font-weight: bold;
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
         }
 
         input[type="text"],
@@ -42,47 +46,56 @@
         .home-button {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+            margin: 10px 0;
+            border: none;
             border-radius: 5px;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease;
             font-size: 16px;
-            cursor: pointer;
-            display: block;
-            text-align: center;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            border: 1px solid #ccc;
         }
 
         input[type="submit"] {
             background-color: #007bff;
             color: #fff;
+            cursor: pointer;
         }
 
         input[type="submit"]:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
         }
 
         .home-button {
-            background-color: #ce5645;
+            background-color: #FF7043;
             color: #fff;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
         }
 
         .home-button:hover {
-            background-color: #ce5533;
+            background-color: #FF5722;
+            transform: scale(1.05);
         }
 
         /* Media Query für Tablet */
         @media only screen and (max-width: 768px) {
             .container {
-                width: 80%; /* Anpassen der Breite für Tablet */
+                width: 80%;
             }
         }
 
         /* Media Query für Mobilgeräte */
         @media only screen and (max-width: 480px) {
             .container {
-                width: 95%; /* Anpassen der Breite für Mobilgeräte */
+                width: 95%;
             }
         }
     </style>
@@ -90,18 +103,17 @@
 <body>
 
 <div class="container">
-    <h2>Konto erstellen</h2>
+    <h2>Sign Up</h2>
     <form action="/signup/submit" method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
-        <input type="submit" value="Signup">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="Sign Up">
     </form>
     <a href="/" class="home-button">Home</a>
-
 </div>
 
 </body>

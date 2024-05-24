@@ -7,73 +7,70 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
-            background-image: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg');
-            background-size: cover; /* Hintergrundbild an den Bildschirm anpassen */
-            background-repeat: no-repeat;
+            background: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
         }
         .container {
-            width: 90%; /* Breite des Containers anpassen */
-            max-width: 600px;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
         }
         h1 {
             color: #333;
-            margin-bottom: 10px;
-            text-align: center;
+            margin-bottom: 20px;
         }
         .inspection-info {
             margin-bottom: 20px;
+            text-align: left;
         }
-        .download-container {
-            margin-top: 20px;
-            text-align: center;
+        .inspection-info p {
+            margin: 5px 0;
         }
-        .download-container button {
+        .button {
             padding: 12px 20px;
-            background-color: #008CBA;
-            color: white;
+            margin: 10px 5px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin-right: 10px;
+            text-decoration: none;
+            color: white;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .download-container button:hover {
+        .download-button {
+            background-color: #008CBA;
+        }
+        .download-button:hover {
             background-color: #005f6b;
+            transform: scale(1.05);
         }
         .home-button {
-            display: inline-block;
-            padding: 12px 20px;
-            background-color: #ce5565;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            text-decoration: none;
+            background-color: #FF7043;
         }
         .home-button:hover {
-            background-color: #ce5533;
+            background-color: #FF5722;
+            transform: scale(1.05);
         }
 
-        /* Media Query für Tablet */
         @media only screen and (max-width: 768px) {
             .container {
-                width: 80%; /* Anpassen der Breite für Tablet */
+                width: 80%;
             }
         }
-
-        /* Media Query für Mobilgeräte */
         @media only screen and (max-width: 480px) {
             .container {
-                width: 95%; /* Anpassen der Breite für Mobilgeräte */
+                width: 95%;
             }
         }
     </style>
@@ -82,19 +79,19 @@
     <div class="container">
         <h1>Inspection Submitted Successfully</h1>
         <div class="inspection-info">
-            <p>Last Submitted Inspection:</p>
-            <p>Location: {{ inspections[-1].inspection_location }}</p>
-            <p>Ship Name: {{ inspections[-1].ship_name }}</p>
-            <p>Inspection Date: {{ inspections[-1].inspection_date }}</p>
-            <p>Inspection Details: {{ inspections[-1].inspection_details }}</p>
-            <p>numerical_value: {{ inspections[-1].numerical_value }}</p>
-            <p>User ID: {{ inspections[-1].user_id }}</p>
+            <p><strong>Last Submitted Inspection:</strong></p>
+            <p><strong>Location:</strong> {{ inspections[-1].inspection_location }}</p>
+            <p><strong>Ship Name:</strong> {{ inspections[-1].ship_name }}</p>
+            <p><strong>Inspection Date:</strong> {{ inspections[-1].inspection_date }}</p>
+            <p><strong>Inspection Details:</strong> {{ inspections[-1].inspection_details }}</p>
+            <p><strong>Numerical Value:</strong> {{ inspections[-1].numerical_value }}</p>
+            <p><strong>User ID:</strong> {{ inspections[-1].user_id }}</p>
         </div>
-        <div class="download-container">
-            <form action="/download/" method="get">
-                <button type="submit">Download Inspections</button>
+        <div class="button-container">
+            <form action="/download/" method="get" style="display: inline;">
+                <button type="submit" class="button download-button">Download Inspections</button>
             </form>
-            <a href="/" class="home-button">Home</a>
+            <a href="/" class="button home-button">Home</a>
         </div>
     </div>
 </body>
