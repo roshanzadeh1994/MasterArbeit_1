@@ -6,7 +6,7 @@
     <title>Submission Success</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background: url('https://www.ndr.de/fernsehen/screenshot1246032_v-fullhd.jpg') no-repeat center center fixed;
@@ -29,6 +29,17 @@
         h1 {
             color: #333;
             margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            position: relative;
+        }
+        h1::before {
+            content: "✔️";
+            font-size: 35px;
+            position: absolute;
+            left: -10px;
+            top: 41%;
+            transform: translateY(-50%);
         }
         .inspection-info {
             margin-bottom: 20px;
@@ -76,23 +87,23 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Inspection Submitted Successfully</h1>
-        <div class="inspection-info">
-            <p><strong>Last Submitted Inspection:</strong></p>
-            <p><strong>Location:</strong> {{ inspections[-1].inspection_location }}</p>
-            <p><strong>Ship Name:</strong> {{ inspections[-1].ship_name }}</p>
-            <p><strong>Inspection Date:</strong> {{ inspections[-1].inspection_date }}</p>
-            <p><strong>Inspection Details:</strong> {{ inspections[-1].inspection_details }}</p>
-            <p><strong>Numerical Value:</strong> {{ inspections[-1].numerical_value }}</p>
-            <p><strong>User ID:</strong> {{ inspections[-1].user_id }}</p>
-        </div>
-        <div class="button-container">
-            <form action="/download/" method="get" style="display: inline;">
-                <button type="submit" class="button download-button">Download Inspections</button>
-            </form>
-            <a href="/" class="button home-button">Home</a>
-        </div>
+<div class="container">
+    <h1>Inspection Submitted Successfully</h1>
+    <div class="inspection-info">
+        <p><strong>Last Submitted Inspection:</strong></p>
+        <p><strong>Location:</strong> {{ inspections[-1].inspection_location }}</p>
+        <p><strong>Ship Name:</strong> {{ inspections[-1].ship_name }}</p>
+        <p><strong>Inspection Date:</strong> {{ inspections[-1].inspection_date }}</p>
+        <p><strong>Inspection Details:</strong> {{ inspections[-1].inspection_details }}</p>
+        <p><strong>Numerical Value:</strong> {{ inspections[-1].numerical_value }}</p>
+        <p><strong>User ID:</strong> {{ inspections[-1].user_id }}</p>
     </div>
+    <div class="button-container">
+        <form action="/download/" method="get" style="display: inline;">
+            <button type="submit" class="button download-button">⬇️ Download Inspections</button>
+        </form>
+        <a href="/" class="button home-button">🏠 Home</a>
+    </div>
+</div>
 </body>
 </html>

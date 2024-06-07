@@ -105,6 +105,10 @@
             margin-top: 11px;
         }
 
+        .button-container .emoji {
+            margin-right: 10px;
+        }
+
         /* Media Query for Tablet */
         @media only screen and (max-width: 768px) {
             .container {
@@ -121,44 +125,44 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Ship Inspection App</h1>
-        <div class="welcome-message">
-            <p>Welcome, <strong>{{ username }}</strong>. Your user ID is: <strong>{{ user_id }}</strong>.</p>
-        </div>
-        <form action="/login/formular/submit/" method="post">
-            <label for="inspection_location">Inspection Location:</label>
-            <select id="inspection_location" name="inspection_location" required>
-                <option value="" disabled selected>Select a location</option>
-                <option value="berlin">Berlin</option>
-                <option value="greifswald">Greifswald</option>
-                <option value="hamburg">Hamburg</option>
-                <option value="mashhad">Mashhad</option>
-                <option value="tehran">Tehran</option>
-                <option value="stralsund">Stralsund</option>
-                <option value="new_york">New York</option>
-                <option value="london">London</option>
-                <option value="paris">Paris</option>
-                <option value="tokyo">Tokyo</option>
-            </select>
-
-            <label for="ship_name">Ship Name:</label>
-            <input type="text" id="ship_name" name="ship_name" required>
-
-            <label for="inspection_date">Inspection Date:</label>
-            <input type="date" id="inspection_date" name="inspection_date" required>
-
-            <label for="inspection_details">Inspection Details:</label>
-            <textarea id="inspection_details" name="inspection_details"></textarea>
-
-            <label for="numerical_value">Numerical Value:</label>
-            <input type="number" id="numerical_value" name="numerical_value" required>
-
-            <div class="button-container">
-                <input type="submit" value="Submit" required>
-                <a href="/" class="home-button">Home</a>
-            </div>
-        </form>
+<div class="container">
+    <h1>Ship Inspection App</h1>
+    <div class="welcome-message">
+        <p>Welcome, <strong>{{ username }}</strong>. Your user ID is: <strong>{{ user_id }}</strong>.</p>
     </div>
+    <form action="/login/formular/submit/" method="post">
+        <label for="inspection_location">Inspection Location:</label>
+        <select id="inspection_location" name="inspection_location" required>
+            <option value="" disabled selected>Select a location</option>
+            <option value="berlin">Berlin</option>
+            <option value="greifswald">Greifswald</option>
+            <option value="hamburg">Hamburg</option>
+            <option value="mashhad">Mashhad</option>
+            <option value="tehran">Tehran</option>
+            <option value="stralsund">Stralsund</option>
+            <option value="new_york">New York</option>
+            <option value="london">London</option>
+            <option value="paris">Paris</option>
+            <option value="tokyo">Tokyo</option>
+        </select>
+
+        <label for="ship_name">Ship Name:</label>
+        <input type="text" id="ship_name" name="ship_name" required>
+
+        <label for="inspection_date">Inspection Date:</label>
+        <input type="date" id="inspection_date" name="inspection_date" required>
+
+        <label for="inspection_details">Inspection Details:</label>
+        <textarea id="inspection_details" name="inspection_details"></textarea>
+
+        <label for="numerical_value">Numerical Value:</label>
+        <input type="number" id="numerical_value" name="numerical_value" required>
+
+        <div class="button-container">
+            <input type="submit" value="✔️ Submit" required>
+            <a href="/" class="home-button">🏠 Home</a>
+        </div>
+    </form>
+</div>
 </body>
 </html>
