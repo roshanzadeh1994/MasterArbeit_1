@@ -37,7 +37,7 @@ async def login(request: Request, db: Session = Depends(get_db)):
     access_token = oauth2.create_access_token(data={"sub": username})
 
     # Ablaufzeit für Cookies festlegen (z.B. 1 Stunde)
-    expires = datetime.utcnow() + timedelta(seconds=95)
+    expires = datetime.utcnow() + timedelta(seconds=180)
     expires_utc = expires.replace(tzinfo=timezone.utc)  # Setze die Zeitzone auf UTC
 
     # Save user information in cookie with expiration time
@@ -135,6 +135,17 @@ async def homepage(request: Request):
 @router.post("/", response_class=HTMLResponse)
 async def homepage(request: Request):
     return templates.TemplateResponse("homepage.html", {"request": request})
+
+
+@router.get("/about/", response_class=HTMLResponse)
+async def homepage(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request})
+
+
+@router.get("/profile/", response_class=HTMLResponse)
+async def homepage(request: Request, user_id: Optional[str] = Cookie(None), username: Optional[str] = Cookie(None)):
+    return templates.TemplateResponse("profile.html", {"request": request, "user_id": user_id, "username": username})
+
 
 
 @router.get("/download/")

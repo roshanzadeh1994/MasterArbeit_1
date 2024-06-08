@@ -27,6 +27,33 @@
             text-align: center;
         }
 
+        .navbar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
         h2 {
             color: #333;
             margin-bottom: 30px;
@@ -85,8 +112,6 @@
             transform: scale(1.05);
         }
 
-
-
         /* Media Query für Tablet */
         @media only screen and (max-width: 768px) {
             .container {
@@ -103,20 +128,35 @@
     </style>
 </head>
 <body>
-
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+</div>
 <div class="container">
     <h2>📝 Sign Up</h2>
-    <form action="/signup/submit" method="post">
+    <form id="signupForm" action="/signup/submit" method="post" onsubmit="return validatePassword()">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
-        <input type="submit" value="  🔐 Sign Up">
+        <input type="submit" value="🔐 Sign Up">
     </form>
     <a href="/" class="home-button">🏠 Home</a>
 </div>
 
+<script>
+    function validatePassword() {
+        const password = document.getElementById('password').value;
+
+        if (password.length < 8) {
+            alert('Password must be at least 8 characters long.');
+            return false;
+        }
+
+        return true;
+    }
+</script>
 </body>
 </html>

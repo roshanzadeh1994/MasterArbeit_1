@@ -26,6 +26,34 @@
             width: 90%;
             text-align: center;
         }
+
+        .navbar {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .navbar a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      text-align: center;
+      transition: background-color 0.3s;
+      margin-right: 10px;
+    }
+
+    .navbar a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
         h1 {
             color: #333;
             margin-bottom: 20px;
@@ -87,6 +115,12 @@
     </style>
 </head>
 <body>
+<div class="navbar">
+  <a href="/">Home</a>
+  <a href="/about">About</a>
+  <a href="/profile">Profile</a>
+
+</div>
 <div class="container">
     <h1>Inspection Submitted Successfully</h1>
     <div class="inspection-info">
