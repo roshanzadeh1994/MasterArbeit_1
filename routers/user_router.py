@@ -36,3 +36,5 @@ def delete_user(id: int, db=Depends(get_db)):
 @router.post("/update/{id}", )
 def update_user(id: int, user: UserBase2, db=Depends(get_db)):
     return db_user.update_user(id, db, user)
+
+#

@@ -26,3 +26,4 @@ class ShipInspection(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     # Beziehung zu Benutzer
     user = relationship("DbUser", back_populates="items")
+

@@ -19,3 +19,4 @@ def get_all_ship_inspections(db):
 # Funktion zum Abrufen einer einzelnen Schiffsinspektion anhand der ID
 def get_ship_inspection_by_id(db, inspection_id):
     return db.query(ShipInspection).filter(ShipInspection.id == inspection_id).first()
+
