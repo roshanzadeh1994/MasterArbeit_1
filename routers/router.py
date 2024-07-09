@@ -18,7 +18,7 @@ from typing import Optional
 from fastapi.responses import RedirectResponse, HTMLResponse, Response
 from fastapi import Cookie
 
-router = APIRouter()
+router = APIRouter(tags=["router"])
 templates = Jinja2Templates(directory="templates")
 
 
@@ -145,7 +145,6 @@ async def homepage(request: Request):
 @router.get("/profile/", response_class=HTMLResponse)
 async def homepage(request: Request, user_id: Optional[str] = Cookie(None), username: Optional[str] = Cookie(None)):
     return templates.TemplateResponse("profile.html", {"request": request, "user_id": user_id, "username": username})
-
 
 
 @router.get("/download/")

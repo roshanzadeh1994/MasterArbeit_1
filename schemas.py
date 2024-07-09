@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime,date
+from datetime import datetime, date
 from typing import List, Optional
 
 
@@ -10,6 +10,18 @@ class ShipInspectionInput(BaseModel):
     inspection_details: str
     numerical_value: int
     user_id: int
+
+
+class ShipInspectionCreate(ShipInspectionInput):
+    pass
+
+
+class ShipInspection(ShipInspectionInput):
+    id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
 
 
 class UserBase(BaseModel):
@@ -94,4 +106,18 @@ class UserAuth(BaseModel):
     class Config:
         from_attributes = True
 
+
 #
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

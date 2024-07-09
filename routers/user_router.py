@@ -5,7 +5,7 @@ from typing import List
 from db import db_user
 from db.database import get_db
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter(prefix="/user", tags=["user_router"])
 
 
 # create
