@@ -13,7 +13,7 @@ app.mount("/static", StaticFiles(directory="templates"), name="static")
 
 
 app.include_router(user_router.router)
-#app.include_router(router.router)
+app.include_router(router.router)
 app.include_router(authentication.router)
 app.include_router(router_ai.router)
 

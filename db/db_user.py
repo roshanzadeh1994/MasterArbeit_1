@@ -1,5 +1,5 @@
 from sqlalchemy.orm.session import Session
-from schemas import UserBase,UserBase2
+from schemas import UserBase, UserBase2
 from db.models import DbUser
 from db.hash import Hash
 from fastapi.exceptions import HTTPException
@@ -65,3 +65,8 @@ def update_user(user_id: int, db: Session, request: UserBase2):
 
 def get_ship_inspections_by_user(db: Session, user_id: int):
     return db.query(models.ShipInspection).filter(models.ShipInspection.user_id == user_id).all()
+
+
+def get_user_by_username_password(db: Session, username: str, password: str):
+    return db.query(models.DbUser).filter(models.DbUser.username == username,
+                                          models.DbUser.password == password).first()

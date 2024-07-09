@@ -1,18 +1,17 @@
-# router_ai.py
-
 from fastapi import APIRouter, Form, HTTPException, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import openai
 from pydantic import BaseModel
-
 import schemas
 from db import models
 from db.database import get_db
-from db.db_user import create_user
+from db.db_user import create_user, get_user_by_username_password
+from datetime import datetime, timedelta
+import pytz
 
-router = APIRouter()
+router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
 
 # OpenAI API-Key (ersetze durch deinen eigenen API-Key)
@@ -23,10 +22,12 @@ class UserText(BaseModel):
     userText: str
 
 
+# --------------------------------------*************--------------------------------
+
+
 @router.get("/signupAI/", response_class=HTMLResponse)
 async def signup(request: Request):
     return templates.TemplateResponse("signupAI.html", {"request": request})
-
 
 
 @router.post("/signupAI/submit", response_class=HTMLResponse)
@@ -37,7 +38,8 @@ async def process_signup(userText: str = Form(...), db: Session = Depends(get_db
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
-                {"role": "user", "content": f"Extrahiere den Benutzernamen, die E-Mail und das Passwort aus diesem Text: {userText}"}
+                {"role": "user",
+                 "content": f"Extrahiere den Benutzernamen, die E-Mail und das Passwort aus diesem Text: {userText}"}
             ],
             max_tokens=100
         )
@@ -53,10 +55,11 @@ async def process_signup(userText: str = Form(...), db: Session = Depends(get_db
                 ai_user_data[key] = value
 
         # Überprüfe, ob alle erforderlichen Daten extrahiert wurden
-        required_keys = ['benutzername', 'e-mail', 'passwort']  # Schlüsselnamen anpassen
+        required_keys = ['benutzername', 'passwort']  # Schlüsselnamen anpassen
         for key in required_keys:
             if key not in ai_user_data:
-                raise HTTPException(status_code=400, detail=f"Schlüssel '{key}' wurde nicht in den extrahierten Daten gefunden")
+                raise HTTPException(status_code=400,
+                                    detail=f"Schlüssel '{key}' wurde nicht in den extrahierten Daten gefunden")
 
         # Überprüfe, ob der Benutzer bereits existiert
         existing_user = db.query(models.DbUser).filter(models.DbUser.username == ai_user_data['benutzername']).first()
@@ -77,3 +80,5 @@ async def process_signup(userText: str = Form(...), db: Session = Depends(get_db
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Fehler beim Verarbeiten der OpenAI-Antwort: {str(e)}")
+
+# --------------------------------------*************--------------------------------
