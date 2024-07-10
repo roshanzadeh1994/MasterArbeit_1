@@ -1,9 +1,10 @@
+<!-- templates/auto_filled_form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ship Inspection App</title>
+    <title>Ship Inspection App - Auto-Filled</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +17,6 @@
             background-position: center;
             color: #333;
         }
-
         .container {
             width: 90%;
             max-width: 700px;
@@ -27,54 +27,41 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
         .navbar {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-    }
-
-    .navbar a {
-      color: white;
-      padding: 14px 20px;
-      text-decoration: none;
-      text-align: center;
-      transition: background-color 0.3s;
-      margin-right: 10px;
-    }
-
-    .navbar a:hover {
-      background-color: #ddd;
-      color: black;
-    }
-
-
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
         h1 {
             text-align: center;
             color: #333;
             margin-bottom: 20px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
-
-        .welcome-message {
-            text-align: center;
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 30px;
-        }
-
         label {
             font-weight: bold;
             margin-top: 10px;
             display: block;
             color: #333;
         }
-
         input[type="text"],
         input[type="date"],
         input[type="number"],
@@ -88,7 +75,6 @@
             box-sizing: border-box;
             font-size: 16px;
         }
-
         input[type="submit"],
         .download-button,
         .home-button {
@@ -105,51 +91,40 @@
             box-sizing: border-box;
             color: white;
         }
-
         input[type="submit"] {
             background-color: #4CAF50;
         }
-
         .download-button {
             background-color: #008CBA;
         }
-
         .home-button {
             background-color: #ce5565;
         }
-
         input[type="submit"]:hover,
         .download-button:hover,
         .home-button:hover {
             transform: translateY(-2px);
             filter: brightness(90%);
         }
-
         .button-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-top: 11px;
         }
-
         .button-container .emoji {
             margin-right: 10px;
         }
-
-        /* Media Query for Tablet */
         @media only screen and (max-width: 768px) {
             .container {
                 width: 80%;
             }
         }
-
-        /* Media Query for Mobile */
         @media only screen and (max-width: 480px) {
             .container {
                 width: 95%;
             }
         }
-
     </style>
 </head>
 <body>
@@ -159,42 +134,26 @@
     <a href="/about">About</a>
 </div>
 <div class="container">
-    <h1>Ship Inspection App</h1>
-    <div class="welcome-message">
-        <p>Welcome, <strong>{{ username }}</strong>. Your user ID is: <strong>{{ user_id }}</strong>.</p>
-    </div>
+    <h1>Ship Inspection App - Auto-Filled</h1>
     <form action="/login/formular/submit/" method="post">
         <label for="inspection_location">Inspection Location:</label>
-        <select id="inspection_location" name="inspection_location" required>
-            <option value="" disabled selected>Select a location</option>
-            <option value="berlin">Berlin</option>
-            <option value="greifswald">Greifswald</option>
-            <option value="hamburg">Hamburg</option>
-            <option value="mashhad">Mashhad</option>
-            <option value="tehran">Tehran</option>
-            <option value="stralsund">Stralsund</option>
-            <option value="new_york">New York</option>
-            <option value="london">London</option>
-            <option value="paris">Paris</option>
-            <option value="tokyo">Tokyo</option>
-        </select>
+        <input type="text" id="inspection_location" name="inspection_location" value="{{ data['inspection location'] }}" required>
 
         <label for="ship_name">Ship Name:</label>
-        <input type="text" id="ship_name" name="ship_name" required>
+        <input type="text" id="ship_name" name="ship_name" value="{{ data['ship name'] }}" required>
 
         <label for="inspection_date">Inspection Date:</label>
-        <input type="date" id="inspection_date" name="inspection_date" required>
+        <input type="date" id="inspection_date" name="inspection_date" value="{{ data['inspection date'] }}" required>
 
         <label for="inspection_details">Inspection Details:</label>
-        <textarea id="inspection_details" name="inspection_details"></textarea>
+        <textarea id="inspection_details" name="inspection_details">{{ data['inspection details'] }}</textarea>
 
         <label for="numerical_value">Numerical Value:</label>
-        <input type="number" id="numerical_value" name="numerical_value" required>
+        <input type="number" id="numerical_value" name="numerical_value" value="{{ data['numerical value'] }}" required>
 
         <div class="button-container">
-            <input type="submit" value="✔️ Submit" required>
+            <input type="submit" value="✔️ Submit">
             <a href="/" class="home-button">🏠 Home</a>
-            <a href="/text_input" class="home-button">🏠 AI Form</a>
         </div>
     </form>
 </div>
