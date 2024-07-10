@@ -8,7 +8,7 @@ import schemas
 from db import models
 from db.database import get_db
 from db.db_user import create_user, get_user_by_username_password
-
+from datetime import datetime
 
 router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
@@ -111,8 +111,19 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
         for item in data:
             key_value = item.split(':')
             if len(key_value) == 2:
-                key = key_value[0].strip().lower()
+                key = key_value[0].strip().lower().replace('-', '').strip()
                 value = key_value[1].strip()
+                # Mapping der Schlüssel von OpenAI auf die erwarteten Schlüssel
+                if 'ort' in key or 'location' in key:
+                    key = 'inspection location'
+                if 'schiffsname' in key or 'name of ship' in key or 'name des schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key:
+                    key = 'ship name'
+                if 'inspektionsdatum' in key:
+                    key = 'inspection date'
+                if 'inspektionsdetails' in key:
+                    key = 'inspection details'
+                if 'numerischer wert' in key or 'nummer' in key:
+                    key = 'numerical value'
                 ai_user_data[key] = value
 
         # Debugging: Ausgabe der extrahierten Daten
@@ -120,13 +131,13 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
 
         # Überprüfe, ob alle erforderlichen Daten extrahiert wurden
         required_keys = ['inspection location', 'ship name', 'inspection date', 'inspection details', 'numerical value']
-        for key in required_keys:
-            if key not in ai_user_data:
-                raise HTTPException(status_code=400,
-                                    detail=f"Schlüssel '{key}' wurde nicht in den extrahierten Daten gefunden")
+        missing_keys = [key for key in required_keys if key not in ai_user_data]
+        if missing_keys:
+            raise HTTPException(status_code=400,
+                                detail=f"Schlüssel {missing_keys} wurden nicht in den extrahierten Daten gefunden")
 
         # Rückgabe der extrahierten Daten und Weiterleitung zur Formularanzeige
-        return templates.TemplateResponse("auto_filled_form.html", {"request": request, "data": ai_user_data})
+        return templates.TemplateResponse("indexAI.html", {"request": request, "data": ai_user_data})
 
     except openai.error.OpenAIError as e:
         raise HTTPException(status_code=500, detail=f"Fehler bei der Anfrage an OpenAI: {str(e)}")
