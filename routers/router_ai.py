@@ -54,10 +54,18 @@ async def process_signup(userText: str = Form(...), db: Session = Depends(get_db
             if len(key_value) == 2:
                 key = key_value[0].strip().lower()
                 value = key_value[1].strip()
+
+                if 'user' in key or 'username' in key or 'User' in key or 'Name' in key or 'name' in key:
+                    key = 'benutzername'
+                if 'pass' in key or 'password' in key or 'Pass' in key or 'secret' in key or 'pin' in key:
+                    key = 'passwort'
+                if 'email' in key or 'Email' in key or 'E-mail' in key or 'mail' in key or 'Mail' in key:
+                    key = 'e-mail'
+
                 ai_user_data[key] = value
 
         # Überprüfe, ob alle erforderlichen Daten extrahiert wurden
-        required_keys = ['benutzername', 'passwort']  # Schlüsselnamen anpassen
+        required_keys = ['benutzername', 'passwort', 'e-mail']  # Schlüsselnamen anpassen
         for key in required_keys:
             if key not in ai_user_data:
                 raise HTTPException(status_code=400,
@@ -132,15 +140,15 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
                 key = key_value[0].strip().lower().replace('-', '').strip()
                 value = key_value[1].strip()
                 # Mapping der Schlüssel von OpenAI auf die erwarteten Schlüssel
-                if 'ort' in key or 'location' in key:
+                if 'ort' in key or 'location' in key or 'Standort' in key or 'plsce' in key or 'Location' in key:
                     key = 'inspection location'
-                if 'schiffsname' in key or 'ship' in key or 'shiff' in key or 'name of ship' in key or 'name des schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key:
+                if 'schiffsname' in key or 'ship' in key or 'Schiff' in key or 'name of ship' in key or 'name des Schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key or 'schiffsname' in key:
                     key = 'ship name'
                 if 'inspektionsdatum' in key or 'Datum' in key or 'date' in key or 'datum' in key:
                     key = 'inspection date'
-                if 'inspektionsdetails' in key or 'details' in key or 'detail' in key:
+                if 'inspektionsdetails' in key or 'details' in key or 'detail' in key or 'Beschreibung' in key or 'Eklärung' in key:
                     key = 'inspection details'
-                if 'numerischer wert' in key or 'nummer' in key or 'nummer' in key or 'number' in key or 'numerical' in key or 'numerische' in key or 'numerisch' in key:
+                if 'numerischer wert' in key or 'Nummer' in key or 'nummer' in key or 'number' in key or 'numerical' in key or 'numerische' in key or 'numerisch' in key:
                     key = 'numerical value'
                 ai_user_data[key] = value
 
