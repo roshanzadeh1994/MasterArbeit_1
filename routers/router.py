@@ -37,7 +37,7 @@ async def login(request: Request, db: Session = Depends(get_db)):
     access_token = oauth2.create_access_token(data={"sub": username})
 
     # Ablaufzeit für Cookies festlegen (z.B. 1 Stunde)
-    expires = datetime.utcnow() + timedelta(seconds=300)
+    expires = datetime.utcnow() + timedelta(seconds=900)
     expires_utc = expires.replace(tzinfo=timezone.utc)  # Setze die Zeitzone auf UTC
 
     # Save user information in cookie with expiration time

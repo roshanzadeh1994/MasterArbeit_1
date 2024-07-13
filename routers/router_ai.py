@@ -9,6 +9,9 @@ from db import models
 from db.database import get_db
 from db.db_user import create_user, get_user_by_username_password
 from datetime import datetime
+import locale
+
+locale.setlocale(locale.LC_TIME, "de_DE")
 
 router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
@@ -87,6 +90,21 @@ async def process_signup(userText: str = Form(...), db: Session = Depends(get_db
 
 # --------------------------------------*************--------------------------------
 
+def parse_date(date_str):
+    """
+    Konvertiert ein Datum im natürlichen Sprachformat in das Format 'dd.mm.yyyy'.
+    """
+    try:
+        # Versuche das Datum im Format 'dd.mm.yyyy' zu parsen
+        return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
+    except ValueError:
+        try:
+            # Versuche das Datum im natürlichen Sprachformat zu parsen
+            return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
+        except ValueError:
+            raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
+
+
 @router.get("/text_input", response_class=HTMLResponse)
 async def text_input(request: Request):
     return templates.TemplateResponse("Text-input.html", {"request": request})
@@ -116,13 +134,13 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
                 # Mapping der Schlüssel von OpenAI auf die erwarteten Schlüssel
                 if 'ort' in key or 'location' in key:
                     key = 'inspection location'
-                if 'schiffsname' in key or 'name of ship' in key or 'name des schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key:
+                if 'schiffsname' in key or 'ship' in key or 'shiff' in key or 'name of ship' in key or 'name des schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key:
                     key = 'ship name'
-                if 'inspektionsdatum' in key:
+                if 'inspektionsdatum' in key or 'Datum' in key or 'date' in key or 'datum' in key:
                     key = 'inspection date'
-                if 'inspektionsdetails' in key:
+                if 'inspektionsdetails' in key or 'details' in key or 'detail' in key:
                     key = 'inspection details'
-                if 'numerischer wert' in key or 'nummer' in key:
+                if 'numerischer wert' in key or 'nummer' in key or 'nummer' in key or 'number' in key or 'numerical' in key or 'numerische' in key or 'numerisch' in key:
                     key = 'numerical value'
                 ai_user_data[key] = value
 
@@ -136,6 +154,20 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
             raise HTTPException(status_code=400,
                                 detail=f"Schlüssel {missing_keys} wurden nicht in den extrahierten Daten gefunden")
 
+        """try:
+            date_obj = datetime.strptime(ai_user_data['inspection date'], '%d.%m.%Y')
+            formatted_date = date_obj.strftime('%Y-%m-%d')
+            ai_user_data['inspection date'] = formatted_date
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy'.")
+
+       """
+        # Formatieren des Datums
+        try:
+            formatted_date = parse_date(ai_user_data['inspection date'])
+            ai_user_data['inspection date'] = formatted_date
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=str(e))
         # Rückgabe der extrahierten Daten und Weiterleitung zur Formularanzeige
         return templates.TemplateResponse("indexAI.html", {"request": request, "data": ai_user_data})
 
