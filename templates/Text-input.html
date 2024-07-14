@@ -1,19 +1,128 @@
-<!-- text_input.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Input for AI</title>
+    <title>Texteingabe für KI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .voice-recording {
+            text-align: center;
+            margin-top: 20px;
+        }
+        audio {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <h1>Geben Sie Ihren Text ein</h1>
     <form action="/process_text" method="post">
         <label for="userText">Benutzereingabe:</label>
-        <textarea id="userText" name="userText" rows="4" cols="50" required></textarea>
-        <input type="submit" value="Submit">
+        <textarea id="userText" name="userText" rows="4" required></textarea>
+        <input type="submit" value="Absenden">
     </form>
+
+    <div class="voice-recording">
+        <h2>Oder sprechen Sie Ihre Nachricht</h2>
+        <button id="recordButton">Aufnahme starten</button>
+        <button id="stopButton" disabled>Aufnahme stoppen</button>
+        <audio id="audioPlayback" controls></audio>
+        <form id="voiceForm" action="/process_voice" method="post" enctype="multipart/form-data">
+            <input type="file" id="audioFile" name="audioFile" style="display:none;" required>
+            <input type="submit" id="voiceSubmit" value="Absenden" style="display:none;">
+        </form>
+    </div>
 </div>
+
+<script>
+    let recordButton = document.getElementById('recordButton');
+    let stopButton = document.getElementById('stopButton');
+    let audioPlayback = document.getElementById('audioPlayback');
+    let audioFileInput = document.getElementById('audioFile');
+    let voiceSubmit = document.getElementById('voiceSubmit');
+    let mediaRecorder;
+    let audioChunks = [];
+
+    recordButton.addEventListener('click', async () => {
+        let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
+        recordButton.disabled = true;
+        stopButton.disabled = false;
+
+        mediaRecorder.ondataavailable = event => {
+            audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+            let blob = new Blob(audioChunks, { type: 'audio/wav' });
+            audioChunks = [];
+            let audioURL = URL.createObjectURL(blob);
+            audioPlayback.src = audioURL;
+
+            let file = new File([blob], 'recording.wav', { type: 'audio/wav' });
+            let dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            audioFileInput.files = dataTransfer.files;
+
+            voiceSubmit.style.display = 'block';
+        };
+    });
+
+    stopButton.addEventListener('click', () => {
+        mediaRecorder.stop();
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+    });
+</script>
 </body>
 </html>
