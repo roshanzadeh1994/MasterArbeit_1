@@ -144,13 +144,13 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
                 # Mapping der Schlüssel von OpenAI auf die erwarteten Schlüssel
                 if 'ort' in key or 'location' in key or 'Standort' in key or 'place' in key or 'Location' in key or 'city' in key or 'Stadt' in key or 'stadt' in key:
                     key = 'inspection location'
-                if 'schiffsname' in key or 'ship' in key or 'Schiff' in key or 'name of ship' in key or 'name des Schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key or 'schiffsname' in key or 'name des schiffs' in key:
+                if 'schiffsname' in key or 'schiffname' in key or 'ship' in key or 'Schiff' in key or 'name of ship' in key or 'name des Schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key or 'schiffsname' in key or 'name des schiffs' in key:
                     key = 'ship name'
                 if 'inspektionsdatum' in key or 'Datum' in key or 'date' in key or 'datum' in key:
                     key = 'inspection date'
                 if 'inspektionsdetails' in key or 'details' in key or 'detail' in key or 'Beschreibung' in key or 'Eklärung' in key:
                     key = 'inspection details'
-                if 'numerischer wert' in key or 'Nummer' in key or 'nummer' in key or 'number' in key or 'numerical' in key or 'numerische' in key or 'numerisch' in key:
+                if 'numerischer wert' in key or 'Nummer' in key or 'nummer' in key or 'number' in key or 'numerical' in key or 'numerische' in key or 'numerisch' in key or '':
                     key = 'numerical value'
                 ai_user_data[key] = value
 
@@ -162,7 +162,7 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
         missing_keys = [key for key in required_keys if key not in ai_user_data]
         if missing_keys:
             raise HTTPException(status_code=400,
-                                detail=f"Schlüssel {missing_keys} wurden nicht in den extrahierten Daten gefunden")
+                                detail=f"Schlüssel {missing_keys} wurden nicht in den extrahierten Daten gefunden *** geschrieben Daten sind :(( {ai_user_data} )) ***")
 
         # Formatieren des Datums
         try:
@@ -221,7 +221,7 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
                 # Mapping der Schlüssel von OpenAI auf die erwarteten Schlüssel
                 if 'ort' in key or 'location' in key or 'Standort' in key or 'place' in key or 'Location' in key or 'city' in key or 'Stadt' in key or 'stadt' in key:
                     key = 'inspection location'
-                if 'schiffsname' in key or 'ship' in key or 'Schiff' in key or 'name of ship' in key or 'name des Schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key or 'schiffsname' in key or 'name des schiffs' in key:
+                if 'schiffsname' in key or 'schiffname' in key or 'ship' in key or 'Schiff' in key or 'name of ship' in key or 'name des Schiffs' in key or 'name des schiffes' in key or 'schiffsname' in key or 'schiffsname' in key or 'name des schiffs' in key:
                     key = 'ship name'
                 if 'inspektionsdatum' in key or 'Datum' in key or 'date' in key or 'datum' in key:
                     key = 'inspection date'
@@ -239,7 +239,7 @@ async def process_voice(request: Request, audioFile: UploadFile = File(...), db:
         missing_keys = [key for key in required_keys if key not in ai_user_data]
         if missing_keys:
             raise HTTPException(status_code=400,
-                                detail=f"Schlüssel {missing_keys} wurden nicht in den extrahierten Daten gefunden")
+                                detail=f"Schlüssel {missing_keys} wurden nicht in den extrahierten Daten gefunden *** geschrieben Daten sind :(( {ai_user_data} )) ***")
 
         # Formatieren des Datums
         try:
