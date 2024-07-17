@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Sprachbefehl</title>
+</head>
+<body>
+    <h1>Sprachbefehl</h1>
+    <button id="startRecord">Aufnahme starten</button>
+    <button id="stopRecord" disabled>Aufnahme stoppen</button>
+    <p id="status"></p>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById('startRecord').addEventListener('click', async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+
+                const formData = new FormData();
+                formData.append('audioFile', audioBlob, 'recording.wav');
+
+                const response = await fetch('/process_command', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.text();
+                    document.getElementById('status').innerHTML = result;
+                } else {
+                    document.getElementById('status').innerHTML = 'Fehler beim Verarbeiten des Sprachbefehls';
+                }
+            };
+
+            mediaRecorder.start();
+            document.getElementById('startRecord').disabled = true;
+            document.getElementById('stopRecord').disabled = false;
+            document.getElementById('status').innerHTML = 'Aufnahme läuft...';
+        });
+
+        document.getElementById('stopRecord').addEventListener('click', () => {
+            mediaRecorder.stop();
+            document.getElementById('startRecord').disabled = false;
+            document.getElementById('stopRecord').disabled = true;
+            document.getElementById('status').innerHTML = 'Aufnahme gestoppt. Verarbeitung läuft...';
+            audioChunks = [];
+        });
+    </script>
+</body>
+</html>
