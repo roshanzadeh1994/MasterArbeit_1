@@ -1,19 +1,14 @@
 from fastapi import APIRouter, Form, HTTPException, Depends, Request, UploadFile, File
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import openai
 from pydantic import BaseModel
-import schemas
-from db import models
 from db.database import get_db
-from db.db_user import create_user, get_user_by_username_password
 from datetime import datetime
 import locale
 import os
 import tempfile
-from fastapi.responses import RedirectResponse
-from routers.router import homepage
 
 locale.setlocale(locale.LC_TIME, "de_DE")
 
@@ -28,16 +23,11 @@ class UserText(BaseModel):
     userText: str
 
 
-# -----------------*************************---------------------*************--------------------------------
-
 def parse_date(date_str):
-    # Konvertiert ein Datum im natürlichen Sprachformat in das Format 'dd.mm.yyyy'.
     try:
-        # Versuche das Datum im Format 'dd.mm.yyyy' zu parsen
         return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
     except ValueError:
         try:
-            # Versuche das Datum im natürlichen Sprachformat zu parsen
             return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
         except ValueError:
             raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
@@ -51,8 +41,7 @@ def extract_data_from_ai_response(response_content):
         if len(key_value) == 2:
             key = key_value[0].strip().lower().replace('-', '').strip()
             value = key_value[1].strip()
-            # Mapping der Schlüssel von OpenAI auf die erwarteten Schlüssel
-            if 'ort' in key or 'location' in key or 'standort' in key or 'place' in key or 'location' in key or 'city' in key or 'stadt' in key:
+            if 'ort' in key or 'location' in key or 'standort' in key or 'place' in key or 'city' in key or 'Stadt' in key:
                 key = 'inspection location'
             if 'schiffsname' in key or 'schiffname' in key or 'ship' in key or 'schiff' in key or 'name of ship' in key or 'name des schiffs' in key:
                 key = 'ship name'
@@ -66,6 +55,17 @@ def extract_data_from_ai_response(response_content):
     return ai_user_data
 
 
+def request_additional_information(missing_keys):
+    questions = {
+        'inspection location': "Was ist der Standort der Inspektion?",
+        'ship name': "Was ist der Name des Schiffes?",
+        'inspection date': "Was ist das Datum der Inspektion?",
+        'inspection details': "Was sind die Details der Inspektion?",
+        'numerical value': "Was ist der numerische Wert?"
+    }
+    return [questions[key] for key in missing_keys]
+
+
 @router.get("/text_input", response_class=HTMLResponse)
 async def text_input(request: Request):
     return templates.TemplateResponse("Text-input.html", {"request": request})
@@ -74,16 +74,31 @@ async def text_input(request: Request):
 @router.post("/process_text", response_class=HTMLResponse)
 async def process_text(request: Request, userText: str = Form(...), db: Session = Depends(get_db)):
     try:
-        # Anfrage an OpenAI stellen
         response = openai.ChatCompletion.create(
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
-                {"role": "user", "content": f"Extrahiere die relevanten Daten aus diesem Text: {userText}"}
+                {"role": "user",
+                 "content": f"Extrahiere die relevanten Daten(location, ship name, date, details, numerical value) aus diesem Text: {userText}"}
+            ],
+            functions=[
+                {
+                    "name": "request_additional_information",
+                    "description": "Erfordert zusätzliche Informationen vom Benutzer",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "missing_keys": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            }
+                        },
+                        "required": ["missing_keys"]
+                    }
+                }
             ]
         )
 
-        # Debug: Ausgabe der vollständigen Antwort von OpenAI
         print("Antwort von OpenAI:", response)
 
         if not response or 'choices' not in response or len(response['choices']) == 0:
@@ -93,26 +108,23 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
         if not ai_response:
             raise HTTPException(status_code=500, detail="Die Antwort von OpenAI ist leer")
 
-        # Verarbeite die Antwort von OpenAI
         ai_user_data = extract_data_from_ai_response(ai_response)
-
-        # Debugging: Ausgabe der extrahierten Daten
         print("Extrahierte Daten von OpenAI:", ai_user_data)
 
-        # Überprüfe, ob alle erforderlichen Daten extrahiert wurden
         required_keys = ['inspection location', 'ship name', 'inspection date', 'inspection details', 'numerical value']
-        missing_keys = [key for key in required_keys if key not in ai_user_data]
+        missing_keys = [key for key in required_keys if key not in ai_user_data or not ai_user_data[key]]
+        print("test", missing_keys)
         if missing_keys:
-            return templates.TemplateResponse("missing_data.html", {"request": request, "missing_keys": missing_keys,
+            questions = request_additional_information(missing_keys)
+            return templates.TemplateResponse("missing_data.html", {"request": request, "questions": questions,
                                                                     "provided_data": ai_user_data})
 
-        # Formatieren des Datums
         try:
             formatted_date = parse_date(ai_user_data['inspection date'])
             ai_user_data['inspection date'] = formatted_date
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
-        # Rückgabe der extrahierten Daten und Weiterleitung zur Formularanzeige
+
         return templates.TemplateResponse("indexAI.html", {"request": request, "data": ai_user_data})
 
     except openai.error.OpenAIError as e:
@@ -128,67 +140,147 @@ async def process_voice(request: Request):
 
 
 @router.post("/process_voice", response_class=HTMLResponse)
-async def process_text(request: Request, userText: str = Form(...),
-                       inspection_location: str = Form(None),
-                       ship_name: str = Form(None),
-                       inspection_date: str = Form(None),
-                       inspection_details: str = Form(None),
-                       numerical_value: str = Form(None)):
-
+async def process_voice(request: Request, audioFile: UploadFile = File(...), db: Session = Depends(get_db)):
     try:
-        # Initialisiere ai_user_data mit den bereitgestellten Werten
-        ai_user_data = {
-            'inspection location': inspection_location or '',
-            'ship name': ship_name or '',
-            'inspection date': inspection_date or '',
-            'inspection details': inspection_details or '',
-            'numerical value': numerical_value or ''
-        }
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio_file:
+            temp_audio_file.write(await audioFile.read())
+            temp_audio_file_path = temp_audio_file.name
 
-        # Debugging: Ausgabe der empfangenen Daten
-        print(f"Empfangene Daten: userText={userText}, inspection_location={inspection_location}, ship_name={ship_name}, inspection_date={inspection_date}, inspection_details={inspection_details}, numerical_value={numerical_value}")
-
-        # Wenn noch Daten fehlen, stelle eine Anfrage an OpenAI zur Vervollständigung
-        if any(value == '' for value in ai_user_data.values()):
-            response = openai.ChatCompletion.create(
-                model="gpt-4-turbo",
-                messages=[
-                    {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
-                    {"role": "user", "content": f"Extrahiere die relevanten Daten aus diesem Text: {userText}"}
-                ]
+        with open(temp_audio_file_path, "rb") as audio_file:
+            response = openai.Audio.transcribe(
+                model="whisper-1",
+                file=audio_file
             )
 
-            # Debug: Ausgabe der vollständigen Antwort von OpenAI
-            print("Antwort von OpenAI:", response)
+        userText = response['text']
+        os.remove(temp_audio_file_path)
 
-            if not response or 'choices' not in response or len(response['choices']) == 0:
-                raise HTTPException(status_code=500, detail="Keine Antwort von OpenAI erhalten")
+        response = openai.ChatCompletion.create(
+            model="gpt-4-turbo",
+            messages=[
+                {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
+                {"role": "user",
+                 "content": f"Extrahiere die relevanten Daten(location, ship name, date, details, numerical value) aus diesem Text: {userText}"}
+            ],
+            functions=[
+                {
+                    "name": "request_additional_information",
+                    "description": "Erfordert zusätzliche Informationen vom Benutzer",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "missing_keys": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            }
+                        },
+                        "required": ["missing_keys"]
+                    }
+                }
+            ]
+        )
 
-            ai_response = response['choices'][0]['message'].get('content')
-            if not ai_response:
-                raise HTTPException(status_code=500, detail="Die Antwort von OpenAI ist leer")
+        print("Antwort von OpenAI:", response)
 
-            # Verarbeite die Antwort von OpenAI
-            ai_user_data.update(extract_data_from_ai_response(ai_response))
+        if not response or 'choices' not in response or len(response['choices']) == 0:
+            raise HTTPException(status_code=500, detail="Keine Antwort von OpenAI erhalten")
 
-        # Debugging: Ausgabe der endgültigen ai_user_data
-        print(f"Endgültige ai_user_data: {ai_user_data}")
+        ai_response = response['choices'][0]['message'].get('content')
+        if not ai_response:
+            raise HTTPException(status_code=500, detail="Die Antwort von OpenAI ist leer")
 
-        # Überprüfe, ob alle erforderlichen Daten vorhanden sind
+        ai_user_data = extract_data_from_ai_response(ai_response)
+        print("Extrahierte Daten von OpenAI:", ai_user_data)
+
         required_keys = ['inspection location', 'ship name', 'inspection date', 'inspection details', 'numerical value']
-        missing_keys = [key for key in required_keys if not ai_user_data.get(key)]
-        if missing_keys:
-            # Wenn Daten fehlen, zurück zur Fehlerseite
-            return templates.TemplateResponse("missing_data.html", {"request": request, "missing_keys": missing_keys, "provided_data": userText})
+        missing_keys = [key for key in required_keys if key not in ai_user_data or not ai_user_data[key]]
 
-        # Formatieren des Datums
+        if missing_keys:
+            questions = request_additional_information(missing_keys)
+            return templates.TemplateResponse("missing_data.html", {"request": request, "questions": questions,
+                                                                    "provided_data": ai_user_data})
+
         try:
             formatted_date = parse_date(ai_user_data['inspection date'])
             ai_user_data['inspection date'] = formatted_date
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-        # Rückgabe der extrahierten Daten und Weiterleitung zur Formularanzeige
+        return templates.TemplateResponse("indexAI.html", {"request": request, "data": ai_user_data})
+
+    except openai.error.OpenAIError as e:
+        raise HTTPException(status_code=500, detail=f"Fehler bei der Anfrage an OpenAI: {str(e)}")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Fehler beim Verarbeiten der OpenAI-Antwort: {str(e)}")
+
+
+from typing import Optional
+from fastapi import Form, HTTPException, Request
+import json
+
+
+@router.post("/complete_data", response_class=HTMLResponse)
+async def complete_data(
+        request: Request,
+        provided_data: str = Form(...),
+        missing_data_1: Optional[str] = Form(None),
+        missing_data_2: Optional[str] = Form(None),
+        missing_data_3: Optional[str] = Form(None),
+        missing_data_4: Optional[str] = Form(None)
+):
+    try:
+        # Debugging-Ausgabe, um zu prüfen, welche Daten empfangen werden
+        print("Bereitgestellte Daten (raw):", provided_data)
+        print("Fehlende Daten:", missing_data_1, missing_data_2, missing_data_3, missing_data_4)
+
+        # Versuche, die bereitgestellten Daten als JSON zu dekodieren
+        try:
+            provided_data = json.loads(provided_data)
+        except json.JSONDecodeError as e:
+            raise HTTPException(status_code=400, detail=f"Fehler beim Dekodieren der bereitgestellten Daten: {str(e)}")
+
+        # Füge die fehlenden Daten hinzu
+        missing_data = {
+            "inspection location": missing_data_1,
+            "ship name": missing_data_2,
+            "inspection date": missing_data_3,
+            "inspection details": missing_data_4
+        }
+        for key, value in missing_data.items():
+            if value:
+                provided_data[key] = value
+
+        # Prüfe, ob alle erforderlichen Daten vorhanden sind
+        required_keys = ['inspection location', 'ship name', 'inspection date', 'inspection details', 'numerical value']
+        for key in required_keys:
+            if key not in provided_data or not provided_data[key]:
+                raise HTTPException(status_code=400, detail=f"Fehlender Wert für {key}")
+
+        # Kombiniere die bereitgestellten Daten und die fehlenden Daten
+        userText = ' '.join(provided_data.values())
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4-turbo",
+            messages=[
+                {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
+                {"role": "user",
+                 "content": f"Extrahiere die relevanten Daten(location, ship name, date, details, numerical value) aus diesem Text: {userText}"}
+            ]
+        )
+
+        print("Antwort von OpenAI:", response)
+
+        if not response or 'choices' not in response or len(response['choices']) == 0:
+            raise HTTPException(status_code=500, detail="Keine Antwort von OpenAI erhalten")
+
+        ai_response = response['choices'][0]['message'].get('content')
+        if not ai_response:
+            raise HTTPException(status_code=500, detail="Die Antwort von OpenAI ist leer")
+
+        ai_user_data = extract_data_from_ai_response(ai_response)
+        print("Extrahierte Daten von OpenAI:", ai_user_data)
+
         return templates.TemplateResponse("indexAI.html", {"request": request, "data": ai_user_data})
 
     except openai.error.OpenAIError as e:
