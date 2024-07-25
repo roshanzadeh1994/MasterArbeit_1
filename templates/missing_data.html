@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fehlende Daten</title>
+</head>
+<body>
+    <h1>Fehlende Daten</h1>
+    <p>Die folgenden Daten fehlen:</p>
+    <ul>
+        {% for key in missing_keys %}
+            <li>{{ key }}</li>
+        {% endfor %}
+    </ul>
+    <form method="post" action="/process_text">
+        <input type="hidden" name="userText" value="{{ provided_data }}">
+        {% for key in missing_keys %}
+            <label for="{{ key }}">{{ key }}:</label>
+            <input type="text" id="{{ key }}" name="{{ key }}" required><br>
+        {% endfor %}
+        <input type="submit" value="Absenden">
+    </form>
+</body>
+</html>

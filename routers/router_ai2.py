@@ -13,6 +13,8 @@ import locale
 import os
 import subprocess
 import tempfile
+from fastapi.responses import RedirectResponse
+from routers.router import homepage
 
 locale.setlocale(locale.LC_TIME, "de_DE")
 
@@ -293,7 +295,7 @@ async def process_command(request: Request, audioFile: UploadFile = File(...), d
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
                 {"role": "user",
-                 "content": f"Basierend auf dem folgenden Text, identifiziere den passenden Router. Wenn du relevante Schlüsselwörter erkennst, nenne den entsprechenden Router nur zwischen diese 3 router: (get  /signup , get  /text_input , get  /process_voice ) : '{userText}'"}
+                 "content": f"Basierend auf dem folgenden Text, geh an den passenden Router. Wenn du relevante Schlüsselwörter erkennst, nenne den entsprechenden Router nur zwischen diese URL: (/signupAI , /text_input für Formular , /process_voice für Formular , ('/') für zurück in homepage , ('/login') für anmelden ) du musst immer get methoden abrufen : '{userText}'"}
             ],
             max_tokens=50
         )
@@ -303,17 +305,23 @@ async def process_command(request: Request, audioFile: UploadFile = File(...), d
         print(f"Erkannter Befehl: {command}")  # Debugging: Erkannten Befehl ausgeben
 
         # Entscheidung basierend auf der Antwort von OpenAI
-        if 'account erstellen' in command or 'signup' in command or "you" in command:
-            return await signup(request)
-        if 'formular ausfüllen' in command or 'form' in command:
-            return await text_input(request)
-        if 'voice' in command or 'Stimme' in command or 'Voice' in command:
-            return await text_input(request)
+        if 'signup' in command or 'account erstellen' in command or 'neue user' in command:
+            return RedirectResponse(url='/signupAI', status_code=303)
+        if 'formular ausfüllen' in command or 'voice' in command or 'with AI' in command or 'formular ausfüllen' in command or 'form' in command or 'normal' 'Without AI' in command:
+            return RedirectResponse(url='/process_voice', status_code=303)
+        if 'homepage' in command or 'zurück' in command or 'start' in command or 'general' in command:
+            return RedirectResponse(url='/', status_code=303)
+        if 'profile' in command or 'information von User' in command:
+            return RedirectResponse(url='/profile', status_code=303)
+        if 'about' in command or 'more' in command or 'kontakt' in command:
+            return RedirectResponse(url='/about', status_code=303)
+        if 'login' in command or 'anmelden' in command:
+            return RedirectResponse(url='/login', status_code=303)
+        if 'download' or 'herunterladen' or 'list von datenbank' or 'ergebnis' or 'result' in command:
+            return RedirectResponse(url='/download/', status_code=303)
+
         else:
             raise HTTPException(status_code=400, detail=f"Unbekannter Befehl: {command}")
 
-    except openai.error.OpenAIError as e:
-        raise HTTPException(status_code=500, detail=f"Fehler bei der Anfrage an OpenAI: {str(e)}")
-
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Fehler beim Verarbeiten der OpenAI-Antwort: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
