@@ -57,24 +57,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>Fehlende Daten</h1>
-        <p>Bitte geben Sie die fehlenden Informationen ein, um fortzufahren.</p>
+    <h1>Fehlende Daten</h1>
+    <p>Bitte geben Sie die fehlenden Informationen ein, um fortzufahren.</p>
 
-        <form action="/complete_data" method="post">
-    {% for question in questions %}
-        <div class="question">
-            <label>{{ question }}</label>
-            <input type="text" name="missing_data_{{ loop.index }}" required>
+    <form action="/complete_data" method="post">
+        {% for question in questions %}
+            <div class="question">
+                <label>{{ question }}</label>
+                <input type="text" name="missing_data_{{ loop.index }}" required>
+            </div>
+        {% endfor %}
+        <input type="hidden" name="provided_data" value='{{ provided_data }}'>
+        <div class="button-group">
+            <button type="submit">Absenden</button>
         </div>
-    {% endfor %}
-    <input type="hidden" name="provided_data" value="{{ provided_data | tojson }}">
-    <div class="button-group">
-        <button type="submit">Absenden</button>
-    </div>
-</form>
+    </form>
+</div>
 
-
-
-    </div>
 </body>
 </html>

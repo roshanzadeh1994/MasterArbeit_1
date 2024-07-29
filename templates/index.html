@@ -26,33 +26,33 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
+
         .navbar {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-    }
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
 
-    .navbar a {
-      color: white;
-      padding: 14px 20px;
-      text-decoration: none;
-      text-align: center;
-      transition: background-color 0.3s;
-      margin-right: 10px;
-    }
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
 
-    .navbar a:hover {
-      background-color: #ddd;
-      color: black;
-    }
-
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
 
         h1 {
             text-align: center;
@@ -159,7 +159,7 @@
     <a href="/about">About</a>
 </div>
 <div class="container">
-    <h1>Ship Inspection App</h1>
+    <h1>Ship Inspection App(manuel Form)</h1>
     <div class="welcome-message">
         <p>Welcome, <strong>{{ username }}</strong>. Your user ID is: <strong>{{ user_id }}</strong>.</p>
     </div>
@@ -193,10 +193,8 @@
 
         <div class="button-container">
             <input type="submit" value="✔️ Submit" required>
-            <a href="/" class="home-button">🏠 Home</a>
-            <a href="/text_input" class="home-button">🏠 AI Form</a>
-            <a href="/process_command" class="home-button">🏠 AI chat</a>
-
+            <a href="/" class="home-button">🏠 Back to Homepage</a>
+            <a href="/text_input" class="download-button"> 🤖 Go to AI Form</a>
         </div>
     </form>
 </div>
