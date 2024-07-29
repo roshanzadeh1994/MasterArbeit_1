@@ -28,13 +28,14 @@ class UserText(BaseModel):
 def parse_date(date_str):
     if date_str.strip().lower() == "nicht angegeben":
         return "1111-11-11"
-    try:
-        return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
-    except ValueError:
+    else:
         try:
-            return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
+            return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
         except ValueError:
-            raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
+            try:
+                return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
+            except ValueError:
+                raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
 
 
 def extract_data_from_ai_response(response_content):
