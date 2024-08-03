@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehlende Daten</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .question label {
+            font-weight: bold;
+        }
+        .question input, .question textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .question textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fehlende Daten</h1>
+        <p>Bitte geben Sie die fehlenden Informationen ein, um fortzufahren.</p>
+
+        <form id="data-form" action="/complete_data" method="post">
+            {% for question in questions %}
+                <div class="question">
+                    <label>{{ question }}</label>
+                    <input type="text" name="missing_data_{{ loop.index }}" required>
+                </div>
+            {% endfor %}
+            <input type="hidden" name="provided_data" value='{{ provided_data }}'>
+            <div class="button-group">
+                <button type="submit">Absenden</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Hier wird die Fragenliste in einer Variable bereitgestellt
+        const questions = {{ questions | tojson }};
+        let currentQuestionIndex = 0; // Start bei 0 für die erste Frage
+
+        function askQuestion(index) {
+            if (index >= questions.length) {
+                console.log('Alle Fragen wurden gestellt.');
+                return;
+            }
+
+            const msg = new SpeechSynthesisUtterance(questions[index]);
+            msg.onend = () => {
+                startSpeechRecognition(index);
+            };
+            window.speechSynthesis.speak(msg);
+        }
+
+        function startSpeechRecognition(index) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'de-DE';
+            recognition.start();
+
+            recognition.onresult = event => {
+                let transcript = event.results[0][0].transcript.trim();
+                console.log(`Erkannter Text für Frage ${index}: ${transcript}`);
+                const inputField = document.querySelector(`input[name="missing_data_${index + 1}"]`); // +1 wegen HTML-Indexierung
+                if (inputField) {
+                    inputField.value = transcript;
+                } else {
+                    console.error(`Kein Eingabefeld gefunden für Frage ${index + 1}`);
+                }
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    askQuestion(currentQuestionIndex); // Nächste Frage
+                }
+            };
+
+            recognition.onerror = event => {
+                console.error('Spracherkennung Fehler:', event.error);
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    askQuestion(currentQuestionIndex); // Nächste Frage
+                }
+            };
+        }
+
+        window.onload = () => {
+            if (questions.length > 0) {
+                askQuestion(currentQuestionIndex); // Starte die erste Frage
+            }
+        };
+    </script>
+</body>
+</html>
