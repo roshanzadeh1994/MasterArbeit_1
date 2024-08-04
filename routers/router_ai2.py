@@ -228,7 +228,7 @@ async def post_process_voice(request: Request, audioFile: UploadFile = File(...)
         # Check if numerical value is a valid number
         if 'numerical value' in ai_user_data:
             try:
-                ai_user_data['numerical value'] = float(ai_user_data['numerical value'])
+                ai_user_data['numerical value'] = int(ai_user_data['numerical value'])
             except ValueError:
                 missing_keys.append('numerical value')
         if missing_keys:
