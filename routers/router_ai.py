@@ -25,16 +25,42 @@ class UserText(BaseModel):
     userText: str
 
 
-def parse_date(date_str):
+"""def parse_date(date_str):
     if date_str.strip().lower() == "nicht angegeben":
         return "1111-11-11"
-    try:
-        return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
-    except ValueError:
+    else:
         try:
-            return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
+            return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
         except ValueError:
-            raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
+            try:
+                return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
+            except ValueError:
+                raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
+
+"""
+
+
+def parse_date(date_str):
+    # Entferne führende und nachfolgende Leerzeichen und konvertiere zu Kleinbuchstaben
+    date_str = date_str.strip().lower()
+
+    # Spezielle Bedingung für "nicht angegeben"
+    if date_str == "nicht angegeben":
+        return "1111-11-11"
+
+    # Definieren der möglichen Datumsformate
+    date_formats = ['%d.%m.%Y', '%Y-%m-%d', '%d. %B %Y']
+
+    # Versuche, das Datum zu parsen
+    for date_format in date_formats:
+        try:
+            parsed_date = datetime.strptime(date_str, date_format)
+            return parsed_date.strftime('%Y-%m-%d')
+        except ValueError:
+            continue
+
+    # Wenn kein Format passt, gebe das Standarddatum zurück
+    return "1111-11-11"
 
 
 def extract_data_from_ai_response(response_content):
@@ -120,14 +146,15 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
         # Check if numerical value is a valid number
         if 'numerical value' in ai_user_data:
             try:
-                ai_user_data['numerical value'] = int(ai_user_data['numerical value'])
+                ai_user_data['numerical value'] = float(ai_user_data['numerical value'])
             except ValueError:
                 missing_keys.append('numerical value')
-        print("test", missing_keys)
+
+        print("missing keys: ", missing_keys)
         if missing_keys:
             questions = request_additional_information(missing_keys)
-            return templates.TemplateResponse("missing_data.html", {"request": request, "questions": questions,
-                                                                    "provided_data": json.dumps(ai_user_data)})
+            return templates.TemplateResponse("missing_data2.html", {"request": request, "questions": questions,
+                                                                     "provided_data": json.dumps(ai_user_data)})
         if ai_user_data["inspection date"]:
             try:
                 formatted_date = parse_date(ai_user_data['inspection date'])
@@ -206,8 +233,8 @@ async def post_process_voice(request: Request, audioFile: UploadFile = File(...)
                 missing_keys.append('numerical value')
         if missing_keys:
             questions = request_additional_information(missing_keys)
-            return templates.TemplateResponse("missing_data.html", {"request": request, "questions": questions,
-                                                                    "provided_data": json.dumps(ai_user_data)})
+            return templates.TemplateResponse("missing_data2.html", {"request": request, "questions": questions,
+                                                                     "provided_data": json.dumps(ai_user_data)})
 
         # Formatieren des Datums
         try:
@@ -233,36 +260,61 @@ async def complete_data(
         missing_data_1: Optional[str] = Form(None),
         missing_data_2: Optional[str] = Form(None),
         missing_data_3: Optional[str] = Form(None),
-        missing_data_4: Optional[str] = Form(None)
+        missing_data_4: Optional[str] = Form(None),
+        audio_missing_data_1: Optional[UploadFile] = File(None),
+        audio_missing_data_2: Optional[UploadFile] = File(None),
+        audio_missing_data_3: Optional[UploadFile] = File(None),
+        audio_missing_data_4: Optional[UploadFile] = File(None)
 ):
     try:
-        # Debugging-Ausgabe, um zu prüfen, welche Daten empfangen werden
         print("Bereitgestellte Daten (raw):", provided_data)
         print("Fehlende Daten:", missing_data_1, missing_data_2, missing_data_3, missing_data_4)
 
-        # Versuche, die bereitgestellten Daten als JSON zu dekodieren
         try:
             provided_data = json.loads(provided_data)
         except json.JSONDecodeError as e:
             raise HTTPException(status_code=400, detail=f"Fehler beim Dekodieren der bereitgestellten Daten: {str(e)}")
 
-        # Extrahiere die fehlenden Schlüssel
         required_keys = ['inspection location', 'ship name', 'inspection date', 'inspection details', 'numerical value']
         missing_keys = [key for key in required_keys if key not in provided_data or not provided_data[key]]
 
-        # Füge die fehlenden Daten hinzu
         missing_data = [
             missing_data_1,
             missing_data_2,
             missing_data_3,
             missing_data_4
         ]
+        missing_data = [data for data in missing_data if data is not None]
 
+        audio_missing_data = [
+            audio_missing_data_1,
+            audio_missing_data_2,
+            audio_missing_data_3,
+            audio_missing_data_4
+        ]
+        audio_missing_data = [data for data in audio_missing_data if data is not None]
+        # Debugging output
+        print("Bereitgestellte Daten (raw):", provided_data)
+        print("Fehlende Daten:", missing_data)
         for key, value in zip(missing_keys, missing_data):
             if value:
                 provided_data[key] = value.strip()
 
-        # Entferne Sternchen (**) und überflüssige Leerzeichen aus den Werten
+        for key, audio_file in zip(missing_keys, audio_missing_data):
+            if audio_file:
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio_file:
+                    temp_audio_file.write(await audio_file.read())
+                    temp_audio_file_path = temp_audio_file.name
+
+                with open(temp_audio_file_path, "rb") as audio:
+                    response = openai.Audio.transcribe(
+                        model="whisper-1",
+                        file=audio
+                    )
+
+                os.remove(temp_audio_file_path)
+                provided_data[key] = response['text'].strip()
+
         for key in provided_data:
             if isinstance(provided_data[key], str):
                 provided_data[key] = provided_data[key].replace('**', '').strip()
@@ -272,19 +324,16 @@ async def complete_data(
             except ValueError:
                 missing_keys.append('numerical value')
 
-        # Prüfe, ob alle erforderlichen Daten vorhanden sind
         for key in required_keys:
             if key not in provided_data or not provided_data[key]:
                 raise HTTPException(status_code=400, detail=f"Fehlender Wert für {key}")
 
-        # Formatieren des Datums
         try:
             formatted_date = parse_date(provided_data['inspection date'])
             provided_data['inspection date'] = formatted_date
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-        # Debugging: Ausgabe der kombinierten und bereinigten Daten
         print("Kombinierte und bereinigte Daten:", provided_data)
 
         return templates.TemplateResponse("indexAI.html", {"request": request, "data": provided_data})
