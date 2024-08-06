@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import openai
 from pydantic import BaseModel
+from starlette.responses import JSONResponse
+
 from db.database import get_db
 from datetime import datetime
 import locale
@@ -45,8 +47,8 @@ def parse_date(date_str):
     date_str = date_str.strip().lower()
 
     # Spezielle Bedingung für "nicht angegeben"
-    if date_str == "nicht angegeben":
-        return "1111-11-11"
+    #if date_str == "nicht angegeben":
+        #return "1111-11-11"
 
     # Definieren der möglichen Datumsformate
     date_formats = ['%d.%m.%Y', '%Y-%m-%d', '%d. %B %Y']
@@ -60,7 +62,7 @@ def parse_date(date_str):
             continue
 
     # Wenn kein Format passt, gebe das Standarddatum zurück
-    return "1111-11-11"
+    #return "1111-11-11"
 
 
 def extract_data_from_ai_response(response_content):
@@ -261,10 +263,14 @@ async def complete_data(
         missing_data_2: Optional[str] = Form(None),
         missing_data_3: Optional[str] = Form(None),
         missing_data_4: Optional[str] = Form(None),
+        missing_data_5: Optional[str] = Form(None),
+
         audio_missing_data_1: Optional[UploadFile] = File(None),
         audio_missing_data_2: Optional[UploadFile] = File(None),
         audio_missing_data_3: Optional[UploadFile] = File(None),
-        audio_missing_data_4: Optional[UploadFile] = File(None)
+        audio_missing_data_4: Optional[UploadFile] = File(None),
+        audio_missing_data_5: Optional[UploadFile] = File(None)
+
 ):
     try:
         print("Bereitgestellte Daten (raw):", provided_data)
@@ -282,7 +288,8 @@ async def complete_data(
             missing_data_1,
             missing_data_2,
             missing_data_3,
-            missing_data_4
+            missing_data_4,
+            missing_data_5
         ]
         missing_data = [data for data in missing_data if data is not None]
 
@@ -290,7 +297,8 @@ async def complete_data(
             audio_missing_data_1,
             audio_missing_data_2,
             audio_missing_data_3,
-            audio_missing_data_4
+            audio_missing_data_4,
+            audio_missing_data_5
         ]
         audio_missing_data = [data for data in audio_missing_data if data is not None]
         # Debugging output
@@ -318,11 +326,11 @@ async def complete_data(
         for key in provided_data:
             if isinstance(provided_data[key], str):
                 provided_data[key] = provided_data[key].replace('**', '').strip()
-        if 'numerical value' in provided_data:
+        """if 'numerical value' in provided_data:
             try:
                 provided_data['numerical value'] = int(provided_data['numerical value'])
             except ValueError:
-                missing_keys.append('numerical value')
+                missing_keys.append('numerical value')"""
 
         for key in required_keys:
             if key not in provided_data or not provided_data[key]:

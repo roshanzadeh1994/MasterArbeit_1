@@ -92,11 +92,11 @@
         <h1>Fehlende Daten</h1>
         <p>Bitte geben Sie die fehlenden Informationen ein, um fortzufahren.</p>
 
-        <form id="data-form" action="/complete_data" method="post">
+        <form id="data-form" action="/complete_data" method="post" onsubmit="return validateForm()">
             {% for question in questions %}
                 <div class="question">
                     <label>{{ question }}</label>
-                    <input type="text" name="missing_data_{{ loop.index }}" required>
+                    <input type="text" name="missing_data_{{ loop.index }}" id="missing_data_{{ loop.index }}" required>
                 </div>
             {% endfor %}
             <input type="hidden" name="provided_data" value='{{ provided_data }}'>
@@ -107,9 +107,28 @@
     </div>
 
     <script>
-        // Hier wird die Fragenliste in einer Variable bereitgestellt
         const questions = {{ questions | tojson }};
-        let currentQuestionIndex = 0; // Start bei 0 für die erste Frage
+        let currentQuestionIndex = 0;
+
+        function validateDate(dateString) {
+            const regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!regex.test(dateString)) {
+                return false;
+            }
+            const date = new Date(dateString);
+            return date instanceof Date && !isNaN(date);
+        }
+
+        function validateForm() {
+            const inputFields = document.querySelectorAll('input[name^="missing_data_"]');
+            for (const input of inputFields) {
+                if (input.labels[0].textContent.includes("Datum") && !validateDate(input.value)) {
+                    alert("Bitte geben Sie das Datum im Format YYYY-MM-DD ein.");
+                    return false;
+                }
+            }
+            return true;
+        }
 
         function askQuestion(index) {
             if (index >= questions.length) {
@@ -132,7 +151,7 @@
             recognition.onresult = event => {
                 let transcript = event.results[0][0].transcript.trim();
                 console.log(`Erkannter Text für Frage ${index}: ${transcript}`);
-                const inputField = document.querySelector(`input[name="missing_data_${index + 1}"]`); // +1 wegen HTML-Indexierung
+                const inputField = document.querySelector(`input[name="missing_data_${index + 1}"]`);
                 if (inputField) {
                     inputField.value = transcript;
                 } else {
@@ -140,7 +159,7 @@
                 }
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questions.length) {
-                    askQuestion(currentQuestionIndex); // Nächste Frage
+                    askQuestion(currentQuestionIndex);
                 }
             };
 
@@ -148,14 +167,14 @@
                 console.error('Spracherkennung Fehler:', event.error);
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questions.length) {
-                    askQuestion(currentQuestionIndex); // Nächste Frage
+                    askQuestion(currentQuestionIndex);
                 }
             };
         }
 
         window.onload = () => {
             if (questions.length > 0) {
-                askQuestion(currentQuestionIndex); // Starte die erste Frage
+                askQuestion(currentQuestionIndex);
             }
         };
     </script>
