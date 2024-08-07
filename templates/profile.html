@@ -78,17 +78,37 @@
             margin-bottom: 10px;
         }
 
-        @media only screen and (max-width: 768px) {
-            .container {
-                width: 80%;
-            }
-        }
+    @media only screen and (max-width: 600px) {
+  .container {
+    max-width: 90%;
+    margin: 30px auto;
+    padding: 10px;
+  }
+  h1 {
+    font-size: 36px;
+  }
+  p {
+    font-size: 18px;
+  }
+  .button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+}
 
-        @media only screen and (max-width: 480px) {
-            .container {
-                width: 95%;
-            }
-        }
+@media only screen and (min-width: 601px) and (max-width: 1024px) {
+  .container {
+    max-width: 70%;
+  }
+  h1 {
+    font-size: 42px;
+  }
+  .button {
+    padding: 12px 25px;
+    font-size: 16px;
+  }
+}
+
     </style>
 </head>
 <body>
@@ -101,8 +121,8 @@
 <div class="container">
     <h2>Profile Information</h2>
     <div class="profile-info">
-<p>(Username): <strong>{{ username }}</strong></p>
-   <p> (ID): <strong>{{ user_id }}</strong></p>
+        <p>(Username): <strong>{{ username }}</strong></p>
+        <p> (ID): <strong>{{ user_id }}</strong></p>
     </div>
 </div>
 </body>
