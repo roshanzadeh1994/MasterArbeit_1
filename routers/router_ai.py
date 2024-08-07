@@ -14,7 +14,7 @@ import tempfile
 from typing import Optional
 import json
 
-locale.setlocale(locale.LC_TIME, "de_DE")
+#locale.setlocale(locale.LC_TIME, "de_DE")
 
 router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
