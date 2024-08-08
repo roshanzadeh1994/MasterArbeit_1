@@ -4,17 +4,13 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import openai
 from pydantic import BaseModel
-from starlette.responses import JSONResponse
-
 from db.database import get_db
 from datetime import datetime
-import locale
 import os
 import tempfile
 from typing import Optional
 import json
-
-#locale.setlocale(locale.LC_TIME, "de_DE")
+import locale
 
 router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
@@ -27,31 +23,32 @@ class UserText(BaseModel):
     userText: str
 
 
-"""def parse_date(date_str):
-    if date_str.strip().lower() == "nicht angegeben":
-        return "1111-11-11"
-    else:
-        try:
-            return datetime.strptime(date_str, '%d.%m.%Y').strftime('%Y-%m-%d')
-        except ValueError:
-            try:
-                return datetime.strptime(date_str, '%d. %B %Y').strftime('%Y-%m-%d')
-            except ValueError:
-                raise ValueError("Ungültiges Datumsformat. Bitte verwende 'dd.mm.yyyy' oder 'dd. Monat yyyy'.")
-
-"""
-
+from datetime import datetime
 
 def parse_date(date_str):
     # Entferne führende und nachfolgende Leerzeichen und konvertiere zu Kleinbuchstaben
     date_str = date_str.strip().lower()
 
     # Spezielle Bedingung für "nicht angegeben"
-    #if date_str == "nicht angegeben":
-        #return "1111-11-11"
+    if date_str == "nicht angegeben":
+        return "1111-11-11"
 
-    # Definieren der möglichen Datumsformate
-    date_formats = ['%d.%m.%Y', '%Y-%m-%d', '%d. %B %Y']
+    # Erweitere die Datumsformate um englische und deutsche Monatsnamen
+    date_formats = [
+        '%d.%m.%Y', '%Y-%m-%d',  # Numerische Formate
+        '%d. %B %Y', '%d. %b %Y',  # Deutsche Monatsnamen, lang und kurz
+        '%d %B %Y', '%d %b %Y'  # Englische Monatsnamen, lang und kurz
+    ]
+
+    # Ersetze deutsche Monate durch ihre englischen Entsprechungen vor dem Parsen
+    german_to_english = {
+        'januar': 'january', 'februar': 'february', 'märz': 'march', 'mai': 'may',
+        'juni': 'june', 'juli': 'july', 'oktober': 'october', 'dezember': 'december',
+        'apr.': 'apr', 'aug.': 'aug', 'dez.': 'dec'
+    }
+
+    for german, english in german_to_english.items():
+        date_str = date_str.replace(german, english)
 
     # Versuche, das Datum zu parsen
     for date_format in date_formats:
@@ -62,7 +59,7 @@ def parse_date(date_str):
             continue
 
     # Wenn kein Format passt, gebe das Standarddatum zurück
-    #return "1111-11-11"
+    return "1111-11-11"
 
 
 def extract_data_from_ai_response(response_content):
@@ -73,7 +70,7 @@ def extract_data_from_ai_response(response_content):
         if len(key_value) == 2:
             key = key_value[0].strip().lower().replace('-', '').strip()
             value = key_value[1].strip()
-            if 'ort' in key or 'location' in key or 'standort' in key or 'place' in key or 'city' in key or 'Stadt' in key:
+            if 'ort' in key or 'location' in key or 'Standort' in key or 'place' in key or 'city' in key or 'Stadt' in key:
                 key = 'inspection location'
             if 'schiffsname' in key or 'schiffname' in key or 'schiff name' in key or 'ship' in key or 'schiff' in key or 'name of ship' in key or 'name des schiffs' in key:
                 key = 'ship name'
@@ -111,7 +108,7 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
                 {"role": "user",
-                 "content": f"Extrahiere die relevanten Daten(location, ship name, date, details, numerical value) aus diesem Text: {userText}"}
+                 "content": f"Extrahiere die relevanten Daten(location, ship name, date oder datum , details, numerical value) aus diesem Text: {userText}"}
             ],
             functions=[
                 {
@@ -161,6 +158,7 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
             try:
                 formatted_date = parse_date(ai_user_data['inspection date'])
                 ai_user_data['inspection date'] = formatted_date
+                print("dateeee", formatted_date)
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=str(e))
 
@@ -326,11 +324,6 @@ async def complete_data(
         for key in provided_data:
             if isinstance(provided_data[key], str):
                 provided_data[key] = provided_data[key].replace('**', '').strip()
-        """if 'numerical value' in provided_data:
-            try:
-                provided_data['numerical value'] = int(provided_data['numerical value'])
-            except ValueError:
-                missing_keys.append('numerical value')"""
 
         for key in required_keys:
             if key not in provided_data or not provided_data[key]:
@@ -339,6 +332,7 @@ async def complete_data(
         try:
             formatted_date = parse_date(provided_data['inspection date'])
             provided_data['inspection date'] = formatted_date
+            print("dateeeeeee", formatted_date)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
