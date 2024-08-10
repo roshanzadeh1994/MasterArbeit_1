@@ -10,7 +10,7 @@ import os
 import tempfile
 from typing import Optional
 import json
-import locale
+from datetime import datetime
 
 router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
@@ -22,8 +22,6 @@ openai.api_key = 'sk-proj-uSLL0VokwK420NRtURgqT3BlbkFJK21oMFYqydJI9jD4qpzR'
 class UserText(BaseModel):
     userText: str
 
-
-from datetime import datetime
 
 def parse_date(date_str):
     # Entferne führende und nachfolgende Leerzeichen und konvertiere zu Kleinbuchstaben
@@ -37,7 +35,7 @@ def parse_date(date_str):
     date_formats = [
         '%d.%m.%Y', '%Y-%m-%d',  # Numerische Formate
         '%d. %B %Y', '%d. %b %Y',  # Deutsche Monatsnamen, lang und kurz
-        '%d %B %Y', '%d %b %Y'  # Englische Monatsnamen, lang und kurz
+        '%d %B %Y', '%d %b %Y', '%B %d, %Y'  # Englische Monatsnamen, lang und kurz
     ]
 
     # Ersetze deutsche Monate durch ihre englischen Entsprechungen vor dem Parsen
@@ -108,7 +106,8 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
             messages=[
                 {"role": "system", "content": "Du bist ein hilfreicher Assistent."},
                 {"role": "user",
-                 "content": f"Extrahiere die relevanten Daten(location, ship name, date oder datum , details, numerical value) aus diesem Text: {userText}"}
+                 "content": f"Extrahiere die relevanten Daten aus dem {userText} basierend auf den Schlüsseln 'inspection location', 'ship name', 'inspection date', 'inspection details' und 'numerical value'. Wenn Informationen zu einem der Schlüssel nicht vorhanden sind, lasse das entsprechende Feld leer."}
+
             ],
             functions=[
                 {
@@ -158,7 +157,6 @@ async def process_text(request: Request, userText: str = Form(...), db: Session 
             try:
                 formatted_date = parse_date(ai_user_data['inspection date'])
                 ai_user_data['inspection date'] = formatted_date
-                print("dateeee", formatted_date)
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=str(e))
 
@@ -332,7 +330,6 @@ async def complete_data(
         try:
             formatted_date = parse_date(provided_data['inspection date'])
             provided_data['inspection date'] = formatted_date
-            print("dateeeeeee", formatted_date)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
