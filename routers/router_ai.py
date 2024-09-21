@@ -16,7 +16,7 @@ router = APIRouter(tags=["router_AI"])
 templates = Jinja2Templates(directory="templates")
 
 # OpenAI API-Key
-openai.api_key = 'sk-proj-uSLL0VokwK420NRtURgqT3BlbkFJK21oMFYqydJI9jD4qpzR'
+openai.api_key = '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'
 
 
 class UserText(BaseModel):
