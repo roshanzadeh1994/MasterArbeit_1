@@ -24,6 +24,18 @@ templates = Jinja2Templates(directory="templates")
 
 @router.post("/login", response_class=RedirectResponse)
 async def login(request: Request, db: Session = Depends(get_db)):
+    """
+    Verarbeitet den Benutzer-Login, prüft die Anmeldedaten und erstellt ein JWT-Token. Bei Erfolg wird der Benutzer weitergeleitet und die Anmeldedaten in Cookies gespeichert.
+
+    Ablauf:
+    1. Überprüfung des Benutzernamens und Passworts.
+    2. Bei Erfolg: Erstellen eines JWT-Tokens, Speichern der Daten in Cookies und Weiterleitung.
+    3. Bei Fehler: Anzeige der Login-Seite mit Fehlermeldung.
+
+    Rückgabewert:
+    - RedirectResponse bei erfolgreichem Login.
+    - HTMLResponse bei fehlerhafter Anmeldung.
+    """
     form_data = await request.form()
     username = form_data.get('username')
     password = form_data.get('password')
@@ -60,12 +72,39 @@ async def index(request: Request, user_id: Optional[str] = Cookie(None), usernam
 @router.post("/login/formular", response_class=HTMLResponse)
 async def process_login_form(request: Request, user_id: Optional[str] = Cookie(None),
                              username: Optional[str] = Cookie(None)):
+    """
+    Zeigt nach erfolgreichem Login die Hauptseite an, basierend auf den Benutzerinformationen aus den Cookies.
+
+    Parameter:
+    - request (Request): Die HTTP-Anfrage.
+    - user_id (str): Benutzer-ID aus dem Cookie.
+    - username (str): Benutzername aus dem Cookie.
+
+    Rückgabewert:
+    - HTMLResponse: Rendert die "index.html"-Seite mit Benutzerinformationen.
+    """
     return templates.TemplateResponse("index.html", {"request": request, "user_id": user_id, "username": username})
 
 
 @router.post("/login/formular/submit/", response_class=HTMLResponse)
 async def submit_ship_inspection(request: Request, db: Session = Depends(get_db),
                                  user_id: Optional[str] = Cookie(None)):
+    """
+        Verarbeitet das Inspektionsformular, erstellt einen neuen Eintrag und zeigt alle Inspektionen des Benutzers an.
+
+        Parameter:
+        - request (Request): Die HTTP-Anfrage mit Formulardaten.
+        - db (Session): Datenbank-Sitzung für die Inspektionserstellung.
+        - user_id (str): Benutzer-ID aus dem Cookie.
+
+        Ablauf:
+        1. Überprüft die Authentifizierung.
+        2. Extrahiert die Formulardaten und erstellt einen neuen Inspektionseintrag.
+        3. Zeigt alle Inspektionen des Benutzers an.
+
+        Rückgabewert:
+        - HTMLResponse: Zeigt die Seite mit allen Inspektionen.
+        """
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
 
